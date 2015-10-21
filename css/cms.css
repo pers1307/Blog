@@ -1,0 +1,85 @@
+#Welcome
+{
+    font: bold 150% "Comic Sans MS";
+    color: #FFFFFF;
+    margin-left: 50px;
+}
+fieldset
+{
+    width: 850px;
+    margin: 0 auto;
+}
+fieldset legend
+{
+    font: bold 100% "Comic Sans MS";
+    color: #FFFFFF;
+    margin: 0 auto;
+}
+#NewArticle
+{
+    resize:none;
+    margin: 0 auto;
+}
+#Submit
+{
+    margin-top: 10px;
+    margin-left: 350px;
+    width: 100px;
+    background-color: #5E534D;
+    font: bold 100% "Comic Sans MS";
+    color: #FFFFFF;
+}
+#Submit:focus
+{
+    background-color: #7B706A;
+}
+#Submit:hover
+{
+    background-color: #ADA29C;
+}
+#WrapAccordion
+{
+    width: 1200px;
+    margin: 10px auto;
+}
+/*Accordion style*/
+#accordion h3
+{
+    background-color: #E6E1DD;
+    font: bold 100% "Comic Sans MS";
+    color: #FFFFFF;
+    margin: 0 0;
+    border: 2px solid #FFFFFF;
+}
+#accordion div
+{
+    border: 2px solid #cccccc;
+    margin: 0 0;
+}
+#accordion p
+{
+    font: 100% "Comic Sans MS";
+    color: #FFFFFF;
+    text-indent: 20px;
+    text-align: justify;
+}
+.X
+{
+   text-decoration: none;
+   margin-left: 10px;
+   color: #86827F;
+
+}
+.X:hover
+{
+    color: #D5D5D5;
+}
+#Top
+{
+    font: bold 100% "Comic Sans MS";
+    color: #FFFFFF;
+}
+#ForTeam
+{
+    width: 750px;
+}
