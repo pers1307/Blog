@@ -1,0 +1,150 @@
+body
+{
+	background-color:#E6E1DD;
+}
+#wrapper
+{
+	min-height: 900px;
+    min-width: 1520px;
+}
+#header
+{
+	background-color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+    height: 150px;
+}
+#img
+{
+	left: 50px;
+    top: 25px;
+	position: relative;
+    width: 500px;
+}
+#NameBlog
+{
+    position: relative;
+    left: 230px;
+    bottom: 90px;
+    color: #404040;
+    font: italic 300% tahoma;
+    letter-spacing: 5px;
+    width: 1100px;
+}
+#menu
+{
+	background-color:#332F2C;
+    margin: 5px 0;
+	min-height: 50px;
+    padding: 0 0;
+
+}
+#menu ul
+{
+    list-style-type: none;
+    padding: 0;
+    margin: 0 auto;
+    position: relative;
+    left: 45px;
+    font: bold 100% "Comic Sans MS";
+}
+#menu ul li
+{
+    margin: 0 1px;
+    display: block;
+    float: left;
+    padding: 10px 30px;
+    min-height: 25px;
+    background-color: #5E534D;
+    height: 30px;
+}
+#menu ul li:hover
+{
+    background-color: #332F2C;
+}
+#menu li a
+{
+    color: #FFFFFF;
+    text-decoration: none;
+}
+#content
+{
+    background-color:#332F2C;
+	min-height: 600px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+#LeftSideBar
+{
+    margin-left: 5px;
+	background-color:#F0EDEA;
+	min-height: 300px;
+    width: 200px;
+    float: left;
+}
+#MyPhoto
+{
+    margin-top: 20px;
+    margin-left: 50px;
+}
+#Enter
+{
+    text-decoration: none;
+    font: bold 100% "Comic Sans MS";
+    color: #332F2C;
+    margin-left: 75px;
+}
+#Enter:hover
+{
+    color: #FFFFFF;
+}
+#blog
+{
+	background-color:#66625F;
+	min-height: 700px;
+    margin: -17px 5px 0px 210px;
+    padding-top: 0px;
+}
+.Record
+{
+	/*background-color:#1ECC1C;*/
+	max-height: 200px;
+    margin: 15px 10px 15px 10px;
+    overflow: hidden;
+}
+.Record h2
+{
+    padding-top: 5px;
+    font: bold 120% "Comic Sans MS";
+    color: #FFFFFF;
+}
+.Record > p
+{
+	/*background-color:#EC2AD3;*/
+	/*max-height: 200px;*/
+    /**height: 200px;*/
+    font: 80% "Comic Sans MS";
+    color: #F0EDEA;
+    text-indent: 20px;
+    text-align: justify;
+}
+.Record:hover
+{
+    max-height: 10000px;
+}
+.line
+{
+    min-height: 2px;
+    background-color: #FFFFFF;
+}
+#footer
+{
+    background-color: #332F2C;
+    margin-top: 5px;
+    padding: 5px 0 5px 20px;
+}
+#footer p
+{
+    font: bold 100% "Comic Sans MS";
+    color: #FFFFFF;
+}
