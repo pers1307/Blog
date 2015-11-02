@@ -1,0 +1,20 @@
+{
+    "name": "pers1307/blog",
+    "description": "blog",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yurii Pereskokov",
+            "email": "skulines@mail.ru"
+        }
+    ],
+    "require": {},
+	"autoload": {
+		"psr-0": {
+			"pers1307\\blog\\controllers\\"  : "src/controllers/",
+			"models\\"       : "src/models",
+			"autorization\\" : "src/autorization",
+			"db\\"           : "src/db"
+		}
+	}
+}
