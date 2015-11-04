@@ -16,9 +16,6 @@ use KoKoKo\assert\Assert;
 
 class ControlContentController extends Controller
 {
-    /**
-     *
-     */
     public function controlContent()
     {
         $status = $this->checkAutorization();
@@ -50,9 +47,6 @@ class ControlContentController extends Controller
         }
     }
 
-    /**
-     *
-     */
     protected function deleteArticle()
     {
         if (isset($_GET['Delete'])) {

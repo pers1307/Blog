@@ -20,19 +20,10 @@ class Autorization
      */
     protected static $instance;
 
-    /**
-     *
-     */
     private function __construct() {}
 
-    /**
-     *
-     */
     private function __clone() {}
 
-    /**
-     *
-     */
     protected function starSession()
     {
         session_start();
@@ -60,10 +51,8 @@ class Autorization
         $user = $users->findByCreditionals($login, $password);
 
         if ($login === $user->getLogin() && $password === $user->getPassword() && $user->getPrivileges() === 'admin') {
-
             return true;
         } else {
-
             return false;
         }
     }
@@ -89,9 +78,6 @@ class Autorization
         return $user;
     }
 
-    /**
-     *
-     */
     public function exitSession() {
         $this->starSession();
 
@@ -107,10 +93,8 @@ class Autorization
         $this->starSession();
 
         if (isset($_SESSION['User'])) {
-
             return true;
         } else {
-
             return false;
         }
     }

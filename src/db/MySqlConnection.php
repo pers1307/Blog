@@ -31,9 +31,6 @@ class MySqlConnection
         return self::$connection;
     }
 
-    /**
-     *
-     */
     public function close()
     {
         if (self::$connection !== null) {
@@ -41,9 +38,6 @@ class MySqlConnection
         }
     }
 
-    /**
-     *
-     */
     protected function createConnectFromConst()
     {
         $opt = array(

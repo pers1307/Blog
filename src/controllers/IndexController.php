@@ -16,9 +16,6 @@ use KoKoKo\assert\Assert;
 
 class IndexController extends Controller
 {
-    /**
-     *
-     */
     public function index()
     {
         $error = 0;
