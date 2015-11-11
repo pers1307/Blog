@@ -23,7 +23,7 @@
 <body>
     <?php
         require 'views/Template/menu.html';
-        require $content;
+        echo $content;
         require 'views/Template/footer.html';
     ?>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

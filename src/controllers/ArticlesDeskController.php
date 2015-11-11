@@ -18,59 +18,58 @@ class ArticlesDeskController extends Controller
 {
     public function editArticleAction()
     {
-        // Тут нужно проверить авторизацию пользователя
+        if (autorization\Autorization::getInstance()->checkAutorization()) {
+            if (!isset($_GET['Edit'])) {
+                header('Location: /articlesDesk');
+            }
 
-        if (!isset($_GET['Edit'])) {
-            header('Location: /articlesDesk');
-        }
+            $id = (int)$_GET['Edit'];
+            $modelArticle = new models\Articles();
+            $article = $modelArticle->findById($id);
+            if ($article === null) {
+                $params['content'] = 'views/editArticlePage.php';
+                $params['error'] = 1;
+            } else {
+                $errorAddArticle = $this->editArticle($article);
 
-        $id = (int)$_GET['Edit'];
-        $modelArticle = new models\Articles();
-        $article = $modelArticle->findById($id);
-        if ($article === null) {
-            $params['content'] = 'views/editArticlePage.php';
-            $params['error'] = 1;
+                $params['article'] = $article;
+                $params['errorAddArticle'] = $errorAddArticle;
+                $params['error'] = 0;
+            }
+            $inside = $this->render('views/editArticlePage.php', $params);
+
+            $params['content'] = $inside;
+            echo $this->render('views/general.php', $params);
+
         } else {
-            $errorAddArticle = $this->editArticle($article);
-
-            $params['content'] = 'views/editArticlePage.php';
-            $params['article'] = $article;
-            $params['errorAddArticle'] = $errorAddArticle;
-            $params['error'] = 0;
+            $params[''] = '';
+            $inside = $this->render('views/Template/alertAutorization.html', $params);
+            $params['content'] = $inside;
+            echo $this->render('views/general.php', $params);
         }
-
-        echo $this->render('views/general.php', $params);
     }
 
-    public function controlContent()
-    {
-        // Проверить авторизацию и в зависимости от неё передать сренднренный кусок контента
-
-        // Сделать отдельный рендер для контента и передать в главный рендер
-
-        $status = $this->checkAutorization();
-        $errorAddArticle = $this->addArticle();
-
-        $article = new models\Articles();
-        $articles = $article->findAll();
-
-        $params['content'] = 'views/contentControlContentPage.php';
-        $params['status'] = $status;
-        $params['articles'] = $articles;
-        $params['errorAddArticle'] = $errorAddArticle;
-
-        echo $this->render('views/general.php', $params);
-    }
-
-    /**
-     * @return string
-     */
-    protected function checkAutorization()
+    public function articlesDeskAction()
     {
         if (autorization\Autorization::getInstance()->checkAutorization()) {
-            return 'Accept';
+            $errorAddArticle = $this->addArticle();
+
+            $article = new models\Articles();
+            $articles = $article->findAll();
+
+            $params['articles'] = $articles;
+            $params['errorAddArticle'] = $errorAddArticle;
+
+            $inside = $this->render('views/articleDesk.php', $params);
+
+            $params['content'] = $inside;
+            echo $this->render('views/general.php', $params);
+
         } else {
-            return 'Unaccept';
+            $params[''] = '';
+            $inside = $this->render('views/Template/alertAutorization.html', $params);
+            $params['content'] = $inside;
+            echo $this->render('views/general.php', $params);
         }
     }
 

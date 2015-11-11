@@ -13,9 +13,9 @@
                 <h3>Добавить новую статью в блог!</h3>
                 <form role="form" method="post" action="" enctype="multipart/form-data">
                     <?php
-                        if ($errorAddArticle['CodeError'] !== '0') {
-                            require 'views/Template/errorAddArticle.php';
-                        }
+                    if ($errorAddArticle['CodeError'] !== '0') {
+                        require 'views/Template/errorAddArticle.php';
+                    }
                     ?>
                     <div class="form-group col-md-8 <?php if ($errorAddArticle['CodeError'] === '1') echo 'has-error'; ?>">
                         <label for="exampleInputEmail1">Название статьи</label>
@@ -27,10 +27,10 @@
                     </div>
                     <div class="form-group col-md-12"<?php if ($errorAddArticle['CodeError'] === '3') echo "style='outline: 1px solid #A90006'"; ?>>
                         <?php
-                            if ($errorAddArticle['CodeError'] !== '0') { ?>
-                                <label for="exampleInputFile">Текущая картинка: <?php echo $errorAddArticle['Article']->getPathImage(); ?></label>
-                                <p><label for="exampleInputFile">Добавьте её снова!</label></p>
-                         <?php } ?>
+                        if ($errorAddArticle['CodeError'] !== '0') { ?>
+                            <label for="exampleInputFile">Текущая картинка: <?php echo $errorAddArticle['Article']->getPathImage(); ?></label>
+                            <p><label for="exampleInputFile">Добавьте её снова!</label></p>
+                        <?php } ?>
                         <label for="exampleInputFile">Хочу добавить картинку!</label>
                         <input type="file" name="NewArticleImage[]" multiple="multiple">
                     </div>
@@ -51,8 +51,8 @@
                 <h3>Редактирование существующих статей</h3>
                 <div class="panel-group" id="accordion">
                     <?php
-                        foreach ($articles as $article) {
-                    ?>
+                    foreach ($articles as $article) {
+                        ?>
                         <div class="panel panel-default" id="idPost<?php echo $article->getId(); ?>">
                             <div class="panel-heading">
                                 <h4 class="panel-title">

@@ -10,7 +10,7 @@ use Phroute\Phroute\Dispatcher;
 $router = new RouteCollector();
 
 $router->any('/', ['pers1307\blog\controllers\IndexController', 'indexAction']);
-$router->any('/articlesDesk', ['pers1307\blog\controllers\ArticlesDeskController', 'controlContent']);
+$router->any('/articlesDesk', ['pers1307\blog\controllers\ArticlesDeskController', 'articlesDeskAction']);
 $router->any('/deleteArticle/{id}',['pers1307\blog\controllers\AjaxController','deleteArticle']);
 $router->any('/EditArticle',['pers1307\blog\controllers\ArticlesDeskController','editArticleAction']);
 $router->any('/Article/{id}',['pers1307\blog\controllers\IndexController','articleAction']);

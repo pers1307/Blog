@@ -15,7 +15,7 @@ abstract class Controller
 {
     /**
      * @param string $templateFile
-     * @param string $params
+     * @param Array $params
      *
      * @return string
      * @throws \InvalidArgumentException

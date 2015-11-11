@@ -45,11 +45,13 @@ class IndexController extends Controller
             $resultSearch['error'] = 1;
         }
 
-        $params['content'] = 'views/searchPage.php';
         $params['error'] = $error;
         $params['resultSearch'] = $resultSearch;
         $params['search'] = $_POST['search'];
 
+        $inside = $this->render('views/searchPage.php', $params);
+
+        $params['content'] = $inside;
         echo $this->render('views/general.php', $params);
     }
 
@@ -69,10 +71,12 @@ class IndexController extends Controller
         $articles = new models\Articles();
         $article = $articles->findById((int)$id);
 
-        $params['content'] = 'views/articlePage.php';
         $params['error'] = $error;
         $params['article'] = $article;
 
+        $inside = $this->render('views/articlePage.php', $params);
+
+        $params['content'] = $inside;
         echo $this->render('views/general.php', $params);
     }
 
@@ -95,12 +99,14 @@ class IndexController extends Controller
         $articles = $rez['cutArticles'];
         $articles = $this->cutTextArticle($articles);
 
-        $params['content'] = 'views/contentIndex.php';
         $params['articles'] = $articles;
         $params['error'] = $error;
         $params['page'] = $currentPage;
         $params['countPage'] = $rez['countPage'];
 
+        $inside = $this->render('views/contentIndex.php', $params);
+
+        $params['content'] = $inside;
         echo $this->render('views/general.php', $params);
     }
 
