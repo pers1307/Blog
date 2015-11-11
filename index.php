@@ -2,14 +2,14 @@
 
 namespace pers1307\blog;
 
+require __DIR__ . '/vendor/autoload.php';
+
 use Phroute\Phroute\RouteCollector;
 use Phroute\Phroute\Dispatcher;
 
-require __DIR__ . '/vendor/autoload.php';
-
 $router = new RouteCollector();
 
-$router->any('/', ['pers1307\blog\controllers\IndexController', 'index']);
+$router->any('/', ['pers1307\blog\controllers\IndexController', 'indexAction']);
 $router->any('/articlesDesk', ['pers1307\blog\controllers\ArticlesDeskController', 'controlContent']);
 $router->any('/deleteArticle/{id}',['pers1307\blog\controllers\AjaxController','deleteArticle']);
 $router->any('/EditArticle',['pers1307\blog\controllers\ArticlesDeskController','editArticleAction']);

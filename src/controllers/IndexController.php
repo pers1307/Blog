@@ -76,7 +76,7 @@ class IndexController extends Controller
         echo $this->render('views/general.php', $params);
     }
 
-    public function index()
+    public function indexAction()
     {
         $error = 0;
         $error = $this->checkUser();
@@ -102,27 +102,6 @@ class IndexController extends Controller
         $params['countPage'] = $rez['countPage'];
 
         echo $this->render('views/general.php', $params);
-    }
-
-    /**
-     * @param array $articles
-     * @return array
-     */
-    protected function cutTextArticle(array $articles)
-    {
-        foreach ($articles as $article) {
-            if (substr($article->getText(), 320, 1) === ' ') {
-                $article->setText(substr($article->getText(), 0, 320) . ' ... ');
-            } else {
-                $count = 321;
-                while(substr($article->getText(), $count, 1) !== ' ') {
-                    $count++;
-                }
-                $article->setText(substr($article->getText(), 0, $count) . ' ... ');
-            }
-        }
-
-        return $articles;
     }
 
     /**
@@ -154,6 +133,27 @@ class IndexController extends Controller
         } else {
             return 2;
         }
+    }
+
+    /**
+     * @param array $articles
+     * @return array
+     */
+    protected function cutTextArticle(array $articles)
+    {
+        foreach ($articles as $article) {
+            if (substr($article->getText(), 320, 1) === ' ') {
+                $article->setText(substr($article->getText(), 0, 320) . ' ... ');
+            } else {
+                $count = 321;
+                while(substr($article->getText(), $count, 1) !== ' ') {
+                    $count++;
+                }
+                $article->setText(substr($article->getText(), 0, $count) . ' ... ');
+            }
+        }
+
+        return $articles;
     }
 
     /**

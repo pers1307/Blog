@@ -17,6 +17,8 @@ class AjaxController extends Controller
 {
     /**
      * @param int $id
+     *
+     * @throws \InvalidArgumentException
      */
     public function deleteArticle($id)
     {

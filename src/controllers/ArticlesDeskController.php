@@ -126,9 +126,10 @@ class ArticlesDeskController extends Controller
     }
 
     /**
+     * @param models\Article $article
      * @return Array
      */
-    protected function editArticle($article)
+    protected function editArticle(models\Article $article)
     {
         if (isset($_POST['NewArticleName']) && isset($_POST['NewArticleText']) && isset($_POST['NewArticleAuthor'])) {
 
@@ -178,9 +179,9 @@ class ArticlesDeskController extends Controller
     }
 
     /**
-     * @param string $code
+     * @param string code
      * @param string $text
-     * @param models\Article $article
+     * @param null|models\Article $article
      *
      * @return Array
      * @throws \InvalidArgumentException

@@ -68,7 +68,7 @@
         </div>
 
         <div class="col-md-2 col-md-offset-1">
-            <p id="MyPhoto"><img src="/img/photo.jpg" width="100" height="150" alt="Хозяин блога"></p>
+            <p id="MyPhoto"><img src="img/photo.jpg" width="100" height="150" alt="Хозяин блога"></p>
 
             <?php if ($error === 1) require 'views/Template/alertFalseLogin.html'; ?>
 

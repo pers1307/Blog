@@ -24,65 +24,12 @@
     <?php
         require 'views/Template/menu.html';
         require $content;
-        //echo $content;
         require 'views/Template/footer.html';
     ?>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="js/bootstrap.js"></script>
-<script>
-    $(document).ready(function(){
-
-        $('.delete').click(function(event) {
-            event.preventDefault();
-
-            var del = $(this).attr("data-delete");
-
-            var route = '/deleteArticle/' + del;
-
-            $.ajax({
-                type: "POST",
-                url: route,
-                data: ({}),
-                success: function(data)
-                {
-                    if (data == 'ArticleDelete') {
-                        var str = '#idPost' + del;
-                        $(str).fadeOut(500);
-                    } else {
-                        alert('Произошла ошибка при удалении статьи!');
-                    }
-                }
-            }); // $.ajax
-        }); // $('.delete').click
-
-        $('#Submit').click(function() {
-
-            var login = $('#Login').val();
-            var password = $('#Password').val();
-
-            $.ajax({
-                type: "POST",
-                url: "test3.php",
-                data: ({ login : login, password : password}),
-                success: function(data)
-                {
-                    console.log(data);
-                    data = JSON.parse(data);
-                    alert(data.login);
-                    alert(data.password);
-                    //$('#Form').fadeOut(500);
-
-                    // Появление элементов
-
-                }
-            }); // $.ajax
-
-            //return false;
-        }); // $('#Submit').submit
-    }); // $(document).ready
-</script>
-
+<script src="/js/bootstrap.js"></script>
+<script src="/js/ajax.js"></script>
 </body>
 </html>

@@ -60,6 +60,8 @@ class Articles
 
     /**
      * @param int $id
+     *
+     * @throws \InvalidArgumentException
      */
     public function deleteById($id)
     {
@@ -118,7 +120,9 @@ class Articles
 
     /**
      * @param int $id
+     *
      * @return Article
+     * @throws \InvalidArgumentException
      */
     public function findById($id)
     {
@@ -225,7 +229,5 @@ class Articles
         }
 
         return $resultArray;
-
     }
-
 }

@@ -33,20 +33,4 @@ abstract class Controller
 
         return ob_get_clean();
     }
-
-    protected function renderContent($templateFile, $params)
-    {
-        /*
-        Assert::assert($templateFile, 'templateFile')->notEmpty()->string();
-        Assert::assert($params, 'params')->isArray();
-
-        ob_start();
-        ob_implicit_flush(false);
-        extract($params, EXTR_OVERWRITE);
-
-        require $templateFile;
-
-        return ob_get_clean();
-        */
-    }
 }
