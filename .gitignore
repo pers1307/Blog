@@ -4,7 +4,7 @@ ehthumbs.db
 
 # Folder config file
 Desktop.ini
-Config.php
+src/config/Config.php
 log
 composer.phar
 composer.lock
