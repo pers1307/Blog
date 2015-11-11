@@ -1,0 +1,22 @@
+{
+    "name": "ko-ko-ko/assert",
+    "description": "Fast flexible php assert",
+    "require-dev": {
+        "codeception/codeception": "2.0.x",
+        "respect/validation": "0.8.x",
+        "beberlei/assert": "v2.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roman Levishchenko",
+            "email": "index.0h@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "KoKoKo\\assert\\": "src",
+            "KoKoKo\\assert\\tests\\": "tests"
+        }
+    }
+}

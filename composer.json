@@ -1,0 +1,21 @@
+{
+    "name": "pers1307/blog",
+    "description": "blog",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yurii Pereskokov",
+            "email": "skulines@mail.ru"
+        }
+    ],
+    "require": {
+        "ko-ko-ko/assert": "0.2.x",
+        "phroute/phroute": "2.0.0",
+        "vlucas/valitron": "~1.2"
+    },
+	"autoload": {
+		"psr-4": {
+			"pers1307\\blog\\"  : "src"
+		}
+	}
+}
