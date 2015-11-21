@@ -22,10 +22,10 @@ class IndexController extends Controller
         $error = $this->checkUser();
 
         if ($error === 2) {
-            $user = autorization\Autorization::getInstance()->getCurrentUser();
+            $params['user'] = autorization\Autorization::getInstance()->getCurrentUser();
 
-            if ($user === null) {
-                $user = '0';
+            if ($params['user'] === null) {
+                $params['user'] = '0';
             }
         }
 
@@ -39,7 +39,7 @@ class IndexController extends Controller
             'error' => $error,
             'page' => $currentPage,
             'countPage' => $rez['countPage'],
-            'user' => $user,
+            //'user' => $user,
             'forContent' => 'index.html'
         ];
 
