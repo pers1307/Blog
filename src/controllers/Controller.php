@@ -41,7 +41,7 @@ abstract class Controller
         Assert::assert($params, 'params')->isArray();
 
         \Twig_Autoloader::register();
-        $loader = new \Twig_Loader_Filesystem('views/twig');
+        $loader = new \Twig_Loader_Filesystem('views');
         $twig = new \Twig_Environment($loader);
         $templ = $twig->LoadTemplate($templateFile);
         return $templ->render($params);
