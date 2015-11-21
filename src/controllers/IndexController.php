@@ -16,80 +16,16 @@ use KoKoKo\assert\Assert;
 
 class IndexController extends Controller
 {
-    public function searchAction()
-    {
-        $error = 0;
-        $error = $this->checkUser();
-
-        if ($error === 2) {
-            $params['user'] = autorization\Autorization::getInstance()->getCurrentUser();
-
-            if ($params['user'] === null) {
-                $params['user'] = '';
-            }
-        }
-
-        $articles = new models\Articles();
-        if (isset($_POST['search'])) {
-            if ($_POST['search'] === '') {
-                header('Location: /');
-            }
-            $resultSearch['name'] = $articles->likeInName($_POST['search']);
-            $resultSearch['text'] = $articles->likeInText($_POST['search']);
-            $resultSearch['error'] = 0;
-            if (count($resultSearch['name']) === 0 && count($resultSearch['text']) === 0) {
-                $resultSearch['error'] = 2;
-            }
-
-        } else {
-            $resultSearch['error'] = 1;
-        }
-
-        $params['error'] = $error;
-        $params['resultSearch'] = $resultSearch;
-        $params['search'] = $_POST['search'];
-
-        $inside = $this->render('views/searchPage.php', $params);
-
-        $params['content'] = $inside;
-        echo $this->render('views/general.php', $params);
-    }
-
-    public function articleAction($id)
-    {
-        $error = 0;
-        $error = $this->checkUser();
-
-        if ($error === 2) {
-            $params['user'] = autorization\Autorization::getInstance()->getCurrentUser();
-
-            if ($params['user'] === null) {
-                $params['user'] = '';
-            }
-        }
-
-        $articles = new models\Articles();
-        $article = $articles->findById((int)$id);
-
-        $params['error'] = $error;
-        $params['article'] = $article;
-
-        $inside = $this->render('views/articlePage.php', $params);
-
-        $params['content'] = $inside;
-        echo $this->render('views/general.php', $params);
-    }
-
     public function indexAction()
     {
         $error = 0;
         $error = $this->checkUser();
 
         if ($error === 2) {
-            $params['user'] = autorization\Autorization::getInstance()->getCurrentUser();
+            $user = autorization\Autorization::getInstance()->getCurrentUser();
 
-            if ($params['user'] === null) {
-                $params['user'] = '';
+            if ($user === null) {
+                $user = '0';
             }
         }
 
@@ -97,17 +33,17 @@ class IndexController extends Controller
         $postOnPage = 3;
         $rez = $this->getArticles($currentPage, (int)$postOnPage);
         $articles = $rez['cutArticles'];
-        $articles = $this->cutTextArticle($articles);
 
-        $params['articles'] = $articles;
-        $params['error'] = $error;
-        $params['page'] = $currentPage;
-        $params['countPage'] = $rez['countPage'];
+        $params = [
+            'articles' => $articles,
+            'error' => $error,
+            'page' => $currentPage,
+            'countPage' => $rez['countPage'],
+            'user' => $user,
+            'forContent' => 'index.html'
+        ];
 
-        $inside = $this->render('views/contentIndex.php', $params);
-
-        $params['content'] = $inside;
-        echo $this->render('views/general.php', $params);
+        echo $this->renderByTwig('layoutFilled.html', $params);
     }
 
     /**
@@ -139,27 +75,6 @@ class IndexController extends Controller
         } else {
             return 2;
         }
-    }
-
-    /**
-     * @param array $articles
-     * @return array
-     */
-    protected function cutTextArticle(array $articles)
-    {
-        foreach ($articles as $article) {
-            if (substr($article->getText(), 320, 1) === ' ') {
-                $article->setText(substr($article->getText(), 0, 320) . ' ... ');
-            } else {
-                $count = 321;
-                while(substr($article->getText(), $count, 1) !== ' ') {
-                    $count++;
-                }
-                $article->setText(substr($article->getText(), 0, $count) . ' ... ');
-            }
-        }
-
-        return $articles;
     }
 
     /**

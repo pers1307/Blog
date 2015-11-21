@@ -27,25 +27,25 @@ class ArticlesDeskController extends Controller
             $modelArticle = new models\Articles();
             $article = $modelArticle->findById($id);
             if ($article === null) {
-                $params['content'] = 'views/editArticlePage.php';
-                $params['error'] = 1;
+                $params = [
+                    'error' => 1
+                ];
             } else {
                 $errorAddArticle = $this->editArticle($article);
-
-                $params['article'] = $article;
-                $params['errorAddArticle'] = $errorAddArticle;
-                $params['error'] = 0;
+                $params = [
+                    'article' => $article,
+                    'errorAddArticle' => $errorAddArticle,
+                    'error' => 0
+                ];
             }
-            $inside = $this->render('views/editArticlePage.php', $params);
 
-            $params['content'] = $inside;
-            echo $this->render('views/general.php', $params);
-
+            $params['forContent'] = 'editArticle.html';
+            echo $this->renderByTwig('layoutFilled.html', $params);
         } else {
-            $params[''] = '';
-            $inside = $this->render('views/Template/alertAutorization.html', $params);
-            $params['content'] = $inside;
-            echo $this->render('views/general.php', $params);
+            $params = [
+                'forContent' => 'template/alertAutorization.html'
+            ];
+            echo $this->renderByTwig('layoutFilled.html', $params);
         }
     }
 
@@ -57,19 +57,19 @@ class ArticlesDeskController extends Controller
             $article = new models\Articles();
             $articles = $article->findAll();
 
-            $params['articles'] = $articles;
-            $params['errorAddArticle'] = $errorAddArticle;
+            $params = [
+                'articles' => $articles,
+                'errorAddArticle' => $errorAddArticle,
+                'forContent' => 'articleDesk.html'
+            ];
 
-            $inside = $this->render('views/articleDesk.php', $params);
-
-            $params['content'] = $inside;
-            echo $this->render('views/general.php', $params);
+            echo $this->renderByTwig('layoutFilled.html', $params);
 
         } else {
-            $params[''] = '';
-            $inside = $this->render('views/Template/alertAutorization.html', $params);
-            $params['content'] = $inside;
-            echo $this->render('views/general.php', $params);
+            $params = [
+                'forContent' => 'template/alertAutorization.html'
+            ];
+            echo $this->renderByTwig('layoutFilled.html', $params);
         }
     }
 

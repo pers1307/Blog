@@ -33,4 +33,17 @@ abstract class Controller
 
         return ob_get_clean();
     }
+
+
+    protected function renderByTwig($templateFile, $params)
+    {
+        Assert::assert($templateFile, 'templateFile')->notEmpty()->string();
+        Assert::assert($params, 'params')->isArray();
+
+        \Twig_Autoloader::register();
+        $loader = new \Twig_Loader_Filesystem('views/twig');
+        $twig = new \Twig_Environment($loader);
+        $templ = $twig->LoadTemplate($templateFile);
+        return $templ->render($params);
+    }
 }

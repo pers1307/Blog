@@ -30,7 +30,7 @@ class Autorization
 
     }
 
-    protected function starSession()
+    public function starSession()
     {
         session_start();
     }
@@ -85,7 +85,6 @@ class Autorization
     }
 
     public function exitSession() {
-        $this->starSession();
 
         if (isset($_SESSION['login'])) {
             unset($_SESSION['login']);
@@ -96,7 +95,6 @@ class Autorization
      * @return bool
      */
     public function checkAutorization() {
-        $this->starSession();
 
         return isset($_SESSION['login']);
     }
@@ -110,7 +108,6 @@ class Autorization
     {
         Assert::assert($user, 'user')->notEmpty()->string();
 
-        $this->starSession();
         $_SESSION['login'] = $user;
     }
 }
