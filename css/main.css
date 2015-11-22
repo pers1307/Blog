@@ -9,6 +9,7 @@
 
 #Content {
     margin-top: 5px;
+    min-height: 700px;
 }
 #Content div div{
     /*height: 700px;*/
@@ -61,4 +62,11 @@
 .Image {
     max-height: 900px;
     max-width:  900px;
+    margin: auto;
+}
+#NoArticle {
+    min-height: 700px;
+}
+#containerForSearch {
+    margin-top: 20px;
 }
