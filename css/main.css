@@ -1,0 +1,72 @@
+#Header {
+    margin-top: 60px;
+}
+#Header div div{
+    color: #62A2F3;
+    font: italic 300% tahoma;
+    letter-spacing: 5px;
+}
+
+#Content {
+    margin-top: 5px;
+    min-height: 700px;
+}
+#Content div div{
+    /*height: 700px;*/
+    /*background: #62A2F3;*/
+}
+#footer {
+    padding-top: 5px;
+    padding-left: 30px;
+    color: #999;
+    text-align: left;
+    background-color: #f9f9f9;
+    border-top: 1px solid #e5e5e5;
+}
+#footer p {
+    margin-top: 10px;
+}
+#MyPhoto
+{
+    margin: 10px auto;
+    margin-left: 30px;
+}
+#Enter {
+    /*margin-left: 40px;*/
+}
+#inputPassword {
+    margin-top: 5px;
+}
+#Pager {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+.blog-post-title {
+    margin-bottom: 5px;
+    font-size: 40px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    color: #333;
+}
+.blog-post-meta {
+    margin-bottom: 20px;
+    color: #999;
+}
+.blog-post-autor {
+    color: #428bca;
+}
+.blog-post-text {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-align: justify;
+}
+.Image {
+    max-height: 900px;
+    max-width:  900px;
+    margin: auto;
+}
+#NoArticle {
+    min-height: 700px;
+}
+#containerForSearch {
+    margin-top: 20px;
+}
