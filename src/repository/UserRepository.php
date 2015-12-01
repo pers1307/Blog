@@ -1,6 +1,6 @@
 <?php
 /**
- * Users.php
+ * UserRepository.php
  *
  * @author      Pereskokov Yurii
  * @copyright   2015 Pereskokov Yurii
@@ -8,12 +8,13 @@
  * @link        https://github.com/pers1307/Blog_v_2.0
  */
 
-namespace pers1307\blog\models;
+namespace pers1307\blog\repository;
 
 use pers1307\blog\db;
 use KoKoKo\assert\Assert;
+use pers1307\blog\entity\User;
 
-class Users
+class UserRepository
 {
     /**
      * @return Array
@@ -28,8 +29,7 @@ class Users
 
         $resultArray = [];
         foreach ($allUsers as $row) {
-            $user = $this->setUserFromRowQuery($row);
-            $resultArray[] = $user;
+            $resultArray[] = $this->setUserFromRowQuery($row);
         }
 
         return $resultArray;
@@ -60,17 +60,19 @@ class Users
     }
 
     /**
-     * @param Array $row
+     * @param array $row
      *
      * @return User
      */
-    protected function setUserFromRowQuery($row)
+    protected function setUserFromRowQuery(array $row)
     {
+        Assert::assert($row, 'row')->notEmpty()->isArray();
+
         $resultUser = (new User())
             ->setId((int)$row['id'])
-            ->setLogin((string)$row['Login'])
-            ->setRole((string)$row['Privileges'])
-            ->setPassword((string)$row['Password']);
+            ->setLogin($row['Login'])
+            ->setRole($row['Privileges'])
+            ->setPassword($row['Password']);
 
         return $resultUser;
     }

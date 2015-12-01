@@ -19,6 +19,3 @@ $router->any('/EditArticle',['pers1307\blog\controllers\ArticlesDeskController',
 $dispatcher = new Dispatcher($router->getData());
 $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 echo $response;
-
-// Privet!!
-// poka!!!

@@ -15,9 +15,7 @@ use KoKoKo\assert\Assert;
 
 class Autorization
 {
-    /**
-     * @var Autorization
-     */
+    /** @var Autorization */
     private static $instance;
 
     private function __construct()
@@ -58,15 +56,7 @@ class Autorization
         $users = new models\Users();
         $user = $users->findByCreditionals($login);
 
-        if ($user !== null) {
-            if (!\password_verify($password, $user->getPassword())) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
+        return !is_null($user) && \password_verify($password, $user->getPassword());
     }
 
     /**

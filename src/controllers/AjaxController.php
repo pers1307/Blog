@@ -12,6 +12,7 @@ namespace pers1307\blog\controllers;
 
 use pers1307\blog\models;
 use KoKoKo\assert\Assert;
+use pers1307\blog\repository\ArticleRepository;
 
 class AjaxController extends Controller
 {
@@ -27,7 +28,7 @@ class AjaxController extends Controller
             Assert::assert($id, 'id')->lengthLess(3);
             $id = abs((int)$id);
 
-            $article = new models\Articles();
+            $article = new ArticleRepository();
             $article->deleteById($id);
         } catch (Exception $e) {
             echo 'ArticleNotDelete';

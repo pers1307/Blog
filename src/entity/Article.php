@@ -8,7 +8,7 @@
  * @link        https://github.com/pers1307/Blog_v_2.0
  */
 
-namespace pers1307\blog\models;
+namespace pers1307\blog\entity;
 
 use KoKoKo\assert\Assert;
 

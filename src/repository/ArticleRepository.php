@@ -1,6 +1,6 @@
 <?php
 /**
- * Articles.php
+ * ArticleRepository.php
  *
  * @author      Pereskokov Yurii
  * @copyright   2015 Pereskokov Yurii
@@ -8,12 +8,14 @@
  * @link        https://github.com/pers1307/Blog_v_2.0
  */
 
-namespace pers1307\blog\models;
+namespace pers1307\blog\repository;
 
 use pers1307\blog\db;
 use KoKoKo\assert\Assert;
+use pers1307\blog\entity\Article;
 
-class Articles
+
+class ArticleRepository
 {
     /**
      * @return Array
@@ -28,25 +30,24 @@ class Articles
 
         $resultArray = [];
         foreach ($allArticles as $row) {
-            $article = (new Article())
+            $resultArray[] = (new Article())
                 ->setId((int)$row['id'])
-                ->setCreatedAt((string)$row['Date'])
-                ->setName((string)$row['ArticleName'])
-                ->setAuthor((string)$row['Author'])
-                ->setText((string)$row['Article'])
-                ->setPathImage((string)$row['Image']);
-            $resultArray[] = $article;
+                ->setCreatedAt($row['Date'])
+                ->setName($row['ArticleName'])
+                ->setAuthor($row['Author'])
+                ->setText($row['Article'])
+                ->setPathImage($row['Image']);
         }
 
         return $resultArray;
     }
 
     /**
-     * @param Article $article
+     * @param article $article
      *
      * @throws \InvalidArgumentException
      */
-    public function insert(Article $article)
+    public function insert(article $article)
     {
         Assert::assert($article->getName(), 'article->getName()')->notEmpty()->string();
         Assert::assert($article->getText(), 'article->getText()')->notEmpty()->string();
@@ -54,8 +55,16 @@ class Articles
         Assert::assert($article->getPathImage(), 'article->getPathImage()')->notEmpty()->string();
 
         $connection = (new db\MySqlConnection())->getConnection();
-        $stmt = $connection->prepare('INSERT INTO articles(ArticleName, Author, Article, Image) VALUES (:NameArticle, :Auth, :TextArticle, :Img)');
-        $stmt->execute(['NameArticle' => $article->getName(), 'Auth' => $article->getAuthor(),'TextArticle' => $article->getText(), 'Img' => $article->getPathImage()]);
+        $stmt = $connection->prepare(
+            'INSERT INTO articles(ArticleName, Author, Article, Image)
+            VALUES (:NameArticle, :Auth, :TextArticle, :Img)'
+        );
+        $stmt->execute([
+            'NameArticle' => $article->getName(),
+            'Auth' => $article->getAuthor(),
+            'TextArticle' => $article->getText(),
+            'Img' => $article->getPathImage()
+        ]);
     }
 
     /**
@@ -84,21 +93,20 @@ class Articles
         Assert::assert($rowCount, 'rowCount')->notEmpty()->int();
         Assert::assert($offset, 'offset')->int();
 
-        $ForConnect = new db\MySqlConnection();
-        $connection = $ForConnect->getConnection();
+        $forConnect = new db\MySqlConnection();
+        $connection = $forConnect->getConnection();
         $stmt = $connection->query('SELECT * FROM articles LIMIT ' . $offset . ', ' . $rowCount);
         $limitArticles = $stmt->fetchAll();
 
         $resultArray = [];
         foreach($limitArticles as $article) {
-            $resultArticle = (new Article())
+            $resultArray[] = (new Article())
                 ->setId((int)$article['id'])
-                ->setCreatedAt((string)$article['Date'])
-                ->setName((string)$article['ArticleName'])
-                ->setAuthor((string)$article['Author'])
-                ->setText((string)$article['Article'])
-                ->setPathImage((string)$article['Image']);
-            $resultArray[] = $resultArticle;
+                ->setCreatedAt($article['Date'])
+                ->setName($article['ArticleName'])
+                ->setAuthor($article['Author'])
+                ->setText($article['Article'])
+                ->setPathImage($article['Image']);
         }
 
         return $resultArray;
@@ -109,11 +117,14 @@ class Articles
      */
     public function count()
     {
-        $ForConnect = new db\MySqlConnection();
-        $connection = $ForConnect->getConnection();
-        $stmt = $connection->query('SELECT COUNT(*) FROM articles');
+        $forConnect = new db\MySqlConnection();
+        $connection = $forConnect->getConnection();
+        $stmt = $connection->query(
+            'SELECT COUNT(*) AS result
+            FROM articles'
+        );
         $result = $stmt->fetch();
-        $result = $result['COUNT(*)'];
+        $result = $result['result'];
 
         return $result;
     }
@@ -137,11 +148,11 @@ class Articles
         if ($stmt->rowCount() !== 0) {
             $resultArticle = (new Article())
                 ->setId((int)$article['id'])
-                ->setCreatedAt((string)$article['Date'])
-                ->setName((string)$article['ArticleName'])
-                ->setAuthor((string)$article['Author'])
-                ->setText((string)$article['Article'])
-                ->setPathImage((string)$article['Image']);
+                ->setCreatedAt($article['Date'])
+                ->setName($article['ArticleName'])
+                ->setAuthor($article['Author'])
+                ->setText($article['Article'])
+                ->setPathImage($article['Image']);
         } else {
             $resultArticle = null;
         }
@@ -150,22 +161,28 @@ class Articles
     }
 
     /**
-     * @param Article $article
+     * @param article $article
      */
-    public function updateById(Article $article)
+    public function updateById(article $article)
     {
         $ForConnect = new db\MySqlConnection();
         $connection = $ForConnect->getConnection();
-        $stmt = $connection->prepare('UPDATE articles SET ArticleName = :articleName,
-                                                          Author = :author,
-                                                          Article = :text,
-                                                          Image = :img
-                                                          WHERE
-                                                          id = :id');
-        $stmt->execute(['id' => $article->getId(),
-                        'articleName' => $article->getName(),
-                        'author' => $article->getAuthor(),
-                        'text' => $article->getText(),
-                        'img' => $article->getPathImage()]);
+        $stmt = $connection->prepare(
+            'UPDATE articles
+            SET ArticleName = :articleName,
+            Author = :author,
+            Article = :text,
+            Image = :img
+            WHERE
+            id = :id'
+        );
+
+        $stmt->execute([
+            'id' => $article->getId(),
+            'articleName' => $article->getName(),
+            'author' => $article->getAuthor(),
+            'text' => $article->getText(),
+            'img' => $article->getPathImage()
+        ]);
     }
 }
