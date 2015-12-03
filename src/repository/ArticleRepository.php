@@ -57,13 +57,13 @@ class ArticleRepository
         $connection = (new db\MySqlConnection())->getConnection();
         $stmt = $connection->prepare(
             'INSERT INTO articles(ArticleName, Author, Article, Image)
-            VALUES (:NameArticle, :Auth, :TextArticle, :Img)'
+            VALUES (:nameArticle, :auth, :textArticle, :img)'
         );
         $stmt->execute([
-            'NameArticle' => $article->getName(),
-            'Auth' => $article->getAuthor(),
-            'TextArticle' => $article->getText(),
-            'Img' => $article->getPathImage()
+            'nameArticle' => $article->getName(),
+            'auth' => $article->getAuthor(),
+            'textArticle' => $article->getText(),
+            'img' => $article->getPathImage()
         ]);
     }
 
@@ -95,7 +95,12 @@ class ArticleRepository
 
         $forConnect = new db\MySqlConnection();
         $connection = $forConnect->getConnection();
-        $stmt = $connection->query('SELECT * FROM articles LIMIT ' . $offset . ', ' . $rowCount);
+
+        $stmt = $connection->prepare('SELECT * FROM articles LIMIT :offset, :rowCount');
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->bindParam(':rowCount', $rowCount, \PDO::PARAM_INT);
+        $stmt->execute();
+
         $limitArticles = $stmt->fetchAll();
 
         $resultArray = [];
@@ -142,7 +147,9 @@ class ArticleRepository
         $ForConnect = new db\MySqlConnection();
         $connection = $ForConnect->getConnection();
 
-        $stmt = $connection->query('SELECT * FROM articles WHERE id = ' . $id);
+        $stmt = $connection->prepare('SELECT * FROM articles WHERE id = :id');
+        $stmt->bindParam('id', $id, \PDO::PARAM_INT);
+        $stmt->execute();
         $article = $stmt->fetch();
 
         if ($stmt->rowCount() !== 0) {

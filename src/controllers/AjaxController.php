@@ -28,8 +28,8 @@ class AjaxController extends Controller
             Assert::assert($id, 'id')->lengthLess(3);
             $id = abs((int)$id);
 
-            $article = new ArticleRepository();
-            $article->deleteById($id);
+            $articles = new ArticleRepository();
+            $articles->deleteById($id);
         } catch (Exception $e) {
             echo 'ArticleNotDelete';
             return;
