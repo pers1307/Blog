@@ -56,7 +56,7 @@
             {% if error != 2 %}
                 {%include 'template/autorizationForm.html' %}
             {% else %}
-                <p>Логин : {{ user.getLogin() }}</p>
+                <p>Логин : {{ login }}</p>
                 <p><a href="/articlesDesk" class="btn btn-primary">Войти</a></p>
                 <p><a href="?Exit=true" class="btn btn-primary">Выйти</a></p>
             {% endif %}

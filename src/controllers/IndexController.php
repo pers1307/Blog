@@ -13,6 +13,7 @@ namespace pers1307\blog\controllers;
 use pers1307\blog\autorization\Autorization;
 use KoKoKo\assert\Assert;
 use pers1307\blog\repository\ArticleRepository;
+use pers1307\blog\repository\UserRepository;
 
 
 class IndexController extends AbstractController
@@ -21,14 +22,6 @@ class IndexController extends AbstractController
     {
         $error = 0;
         $error = $this->checkUser();
-
-        if ($error === 2) {
-            $params['user'] = Autorization::getInstance()->getCurrentUser();
-
-            if ($params['user'] === null) {
-                $params['user'] = '0';
-            }
-        }
 
         $currentPage = (int)$this->pager();
         $postOnPage = 3;
@@ -42,6 +35,16 @@ class IndexController extends AbstractController
             'countPage' => $rez['countPage'],
             'forContent' => 'index.html'
         ];
+
+        if ($error === 2) {
+            $userId = Autorization::getInstance()->getCurrentUserId();
+            $login = (new UserRepository())->findLoginById((int)$userId);
+            $params['login'] = $login;
+
+            if ($params['login'] === null) {
+                $params['login'] = '0';
+            }
+        }
 
         echo $this->renderByTwig('layoutFilled.html', $params);
     }
@@ -62,10 +65,8 @@ class IndexController extends AbstractController
             }
             if (Autorization::getInstance()->signIn($_POST['login'], $_POST['password'])) {
 
-
-
-
-                Autorization::getInstance()->setCurrentUser($_POST['login']);
+                $user = (new UserRepository())->findByCreditionals($_POST['login']);
+                Autorization::getInstance()->setCurrentUserId($user->getId());
                 header('Location: /articlesDesk');
 
                 exit();

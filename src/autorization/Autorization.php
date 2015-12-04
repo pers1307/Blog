@@ -65,35 +65,33 @@ class Autorization
     }
 
     /**
-     * @param UserRepository $user
+     * @param int $userId
      *
      * @throws \InvalidArgumentException
      */
-    public function setCurrentUserId($user)
+    public function setCurrentUserId($userId)
     {
-        Assert::assert($user, 'user')->notEmpty()->string();
+        Assert::assert($userId, 'userId')->notEmpty()->int();
 
-        $_SESSION['login'] = $user;
+        $_SESSION['userId'] = $userId;
     }
 
     /**
      * @return UserRepository|null
      */
-    public function getCurrentUser()
+    public function getCurrentUserId()
     {
-        if (!isset($_SESSION['login'])) {
+        if (!isset($_SESSION['userId'])) {
             return null;
         }
 
-        return (new UserRepository())
-            ->findByCreditionals($_SESSION['login']);
+        return $_SESSION['userId'];
     }
 
     public function exitSession()
     {
-
-        if (isset($_SESSION['login'])) {
-            unset($_SESSION['login']);
+        if (isset($_SESSION['userId'])) {
+            unset($_SESSION['userId']);
         }
     }
 
@@ -102,7 +100,6 @@ class Autorization
      */
     public function checkAutorization()
     {
-
-        return isset($_SESSION['login']);
+        return isset($_SESSION['userId']);
     }
 }

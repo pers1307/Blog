@@ -19,6 +19,7 @@ class AjaxController extends AbstractController
     /**
      * @param int $id
      *
+     * @return string
      * @throws \InvalidArgumentException
      */
     public function deleteArticle($id)
@@ -26,17 +27,13 @@ class AjaxController extends AbstractController
         try {
             Assert::assert($id, 'id')->match('/^\d+$/');
             Assert::assert($id, 'id')->lengthLess(3);
-            $id = abs((int)$id);
 
             $articles = new ArticleRepository();
             $articles->deleteById($id);
         } catch (Exception $e) {
-            echo 'ArticleNotDelete';
-            return;
+            return 'ArticleNotDelete';
         }
 
-        echo 'ArticleDelete';
-
-        return;
+        return 'ArticleDelete';
     }
 }

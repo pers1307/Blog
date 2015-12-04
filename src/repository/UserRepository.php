@@ -59,6 +59,25 @@ class UserRepository
         return $resultUser;
     }
 
+
+    public function findLoginById($id)
+    {
+        Assert::assert($id, 'id')->notEmpty()->int();
+
+        $connection = (new db\MySqlConnection())->getConnection();
+        $stmt = $connection->prepare('SELECT Login FROM users WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+
+        $row = $stmt->fetch();
+        if ($row !== null) {
+            $login = $row['Login'];
+        } else {
+            $login = null;
+        }
+
+        return $login;
+    }
+
     /**
      * @param array $row
      *
