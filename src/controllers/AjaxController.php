@@ -25,8 +25,7 @@ class AjaxController extends AbstractController
     public function deleteArticle($id)
     {
         try {
-            Assert::assert($id, 'id')->match('/^\d+$/');
-            Assert::assert($id, 'id')->lengthLess(3);
+            $id = Assert::assert($id, 'id')->digit()->toInt()->get();
 
             $articles = new ArticleRepository();
             $articles->deleteById($id);

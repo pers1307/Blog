@@ -11,7 +11,7 @@
 namespace pers1307\blog\controllers;
 
 use pers1307\blog\models;
-use pers1307\blog\autorization;
+use pers1307\blog\autorization\Autorization;
 use KoKoKo\assert\Assert;
 use pers1307\blog\repository\ArticleRepository;
 use pers1307\blog\entity\Article;
@@ -20,7 +20,7 @@ class ArticlesDeskController extends AbstractController
 {
     public function editArticleAction()
     {
-        if (autorization\Autorization::getInstance()->checkAutorization()) {
+        if (Autorization::getInstance()->checkAutorization()) {
             if (!isset($_GET['Edit'])) {
                 header('Location: /articlesDesk');
             }
@@ -42,18 +42,18 @@ class ArticlesDeskController extends AbstractController
             }
 
             $params['forContent'] = 'editArticle.html';
-            echo $this->renderByTwig('layoutFilled.html', $params);
+            return $this->renderByTwig('layoutFilled.html', $params);
         } else {
             $params = [
                 'forContent' => 'template/alertAutorization.html'
             ];
-            echo $this->renderByTwig('layoutFilled.html', $params);
+            return $this->renderByTwig('layoutFilled.html', $params);
         }
     }
 
-    public function articlesDeskAction()
+    public function findAllAction()
     {
-        if (autorization\Autorization::getInstance()->checkAutorization()) {
+        if (Autorization::getInstance()->checkAutorization()) {
             $errorAddArticle = $this->addArticle();
 
             $article = new ArticleRepository();
@@ -65,13 +65,13 @@ class ArticlesDeskController extends AbstractController
                 'forContent' => 'articleDesk.html'
             ];
 
-            echo $this->renderByTwig('layoutFilled.html', $params);
+            return $this->renderByTwig('layoutFilled.html', $params);
 
         } else {
             $params = [
                 'forContent' => 'template/alertAutorization.html'
             ];
-            echo $this->renderByTwig('layoutFilled.html', $params);
+            return $this->renderByTwig('layoutFilled.html', $params);
         }
     }
 

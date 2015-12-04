@@ -82,23 +82,23 @@ class ArticleRepository
     }
 
     /**
-     * @param int $rowCount
+     * @param int $limit
      * @param int $offset
      *
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function findByLimit($rowCount, $offset = 0)
+    public function findByLimit($limit, $offset = 0)
     {
-        Assert::assert($rowCount, 'rowCount')->notEmpty()->int();
+        Assert::assert($limit, 'limit')->notEmpty()->int();
         Assert::assert($offset, 'offset')->int();
 
         $forConnect = new db\MySqlConnection();
         $connection = $forConnect->getConnection();
 
-        $stmt = $connection->prepare('SELECT * FROM articles LIMIT :offset, :rowCount');
+        $stmt = $connection->prepare('SELECT * FROM articles LIMIT :offset, :limit');
         $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
-        $stmt->bindParam(':rowCount', $rowCount, \PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
 
         $limitArticles = $stmt->fetchAll();
