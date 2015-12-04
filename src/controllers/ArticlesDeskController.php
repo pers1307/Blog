@@ -10,7 +10,6 @@
 
 namespace pers1307\blog\controllers;
 
-use pers1307\blog\models;
 use pers1307\blog\autorization\Autorization;
 use KoKoKo\assert\Assert;
 use pers1307\blog\repository\ArticleRepository;
@@ -18,42 +17,65 @@ use pers1307\blog\entity\Article;
 
 class ArticlesDeskController extends AbstractController
 {
+    /**
+     * @return array
+     * @throws \InvalidArgumentException
+     */
     public function editArticleAction()
     {
-        if (Autorization::getInstance()->checkAutorization()) {
-            if (!isset($_GET['Edit'])) {
-                header('Location: /articlesDesk');
+        try {
+            if (!Autorization::getInstance()->checkAutorization()) {
+                throw new \Exception(
+                    "У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь."
+                );
             }
 
-            $id = (int)$_GET['Edit'];
+            if (!isset($_GET['articleId'])) {
+                throw new \Exception(
+                    "Такой статьи не существует."
+                );
+            }
+
+            $id = (int)htmlspecialchars($_GET['articleId']);
+            $id = Assert::assert($id, 'id')->notEmpty()->positive()->int()->get();
+
             $modelArticle = new ArticleRepository();
             $article = $modelArticle->findById($id);
+
             if ($article === null) {
-                $params = [
-                    'error' => 1
-                ];
-            } else {
-                $errorAddArticle = $this->editArticle($article);
-                $params = [
-                    'article' => $article,
-                    'errorAddArticle' => $errorAddArticle,
-                    'error' => 0
-                ];
+                throw new \Exception(
+                    "Такой статьи не существует."
+                );
             }
 
-            $params['forContent'] = 'editArticle.html';
-            return $this->renderByTwig('layoutFilled.html', $params);
-        } else {
+            $errorAddArticle = $this->editArticle($article);
             $params = [
-                'forContent' => 'template/alertAutorization.html'
+                'article' => $article,
+                'errorAddArticle' => $errorAddArticle,
             ];
+
+            $params['forContent'] = 'editArticle.html';
+
+            return $this->renderByTwig('layoutFilled.html', $params);
+        } catch (\Exception $exception) {
+            $params = [
+                'forContent' => 'template/alert.html',
+                'message' => $exception->getMessage()
+            ];
+
             return $this->renderByTwig('layoutFilled.html', $params);
         }
     }
 
     public function findAllAction()
     {
-        if (Autorization::getInstance()->checkAutorization()) {
+        try {
+            if (!Autorization::getInstance()->checkAutorization()) {
+                throw new \Exception(
+                    "У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь."
+                );
+            }
+
             $errorAddArticle = $this->addArticle();
 
             $article = new ArticleRepository();
@@ -66,11 +88,12 @@ class ArticlesDeskController extends AbstractController
             ];
 
             return $this->renderByTwig('layoutFilled.html', $params);
-
-        } else {
+        } catch (\Exception $exception) {
             $params = [
-                'forContent' => 'template/alertAutorization.html'
+                'forContent' => 'template/alert.html',
+                'message' => $exception->getMessage()
             ];
+
             return $this->renderByTwig('layoutFilled.html', $params);
         }
     }
@@ -80,6 +103,18 @@ class ArticlesDeskController extends AbstractController
      */
     protected function addArticle()
     {
+        /*
+        try {
+            if (!isset($_POST['name'])) {
+                throw new \InvalidArgumentException('Argument "name" is requred');
+            }
+
+
+        } catch (\Exception $exception) {
+
+        }
+        */
+
         if (isset($_POST['NewArticleName']) && isset($_POST['NewArticleText']) && isset($_POST['NewArticleAuthor'])) {
 
             $article = (new Article())
