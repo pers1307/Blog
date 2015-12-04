@@ -38,7 +38,7 @@ class UserRepository
     /**
      * @param string $login
      *
-     * @return null|User
+     * @return User|null
      * @throws \InvalidArgumentException
      */
     public function findByCreditionals($login)

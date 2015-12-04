@@ -1,6 +1,6 @@
 <?php
 /**
- * Controller.php
+ * AbstractController.php
  *
  * @author      Pereskokov Yurii
  * @copyright   2015 Pereskokov Yurii
@@ -11,11 +11,11 @@
 namespace pers1307\blog\controllers;
 use KoKoKo\assert\Assert;
 
-abstract class Controller
+abstract class AbstractController
 {
     /**
      * @param string $templateFile
-     * @param Array $params
+     * @param array $params
      *
      * @return string
      * @throws \InvalidArgumentException
@@ -34,7 +34,13 @@ abstract class Controller
         return ob_get_clean();
     }
 
-
+    /**
+     * @param string $templateFile
+     * @param $params
+     *
+     * @return array string
+     * @throws \InvalidArgumentException
+     */
     protected function renderByTwig($templateFile, $params)
     {
         Assert::assert($templateFile, 'templateFile')->notEmpty()->string();

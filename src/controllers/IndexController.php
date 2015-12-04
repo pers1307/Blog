@@ -15,7 +15,7 @@ use KoKoKo\assert\Assert;
 use pers1307\blog\repository\ArticleRepository;
 
 
-class IndexController extends Controller
+class IndexController extends AbstractController
 {
     public function indexAction()
     {
@@ -61,6 +61,10 @@ class IndexController extends Controller
                 return 1;
             }
             if (Autorization::getInstance()->signIn($_POST['login'], $_POST['password'])) {
+
+
+
+
                 Autorization::getInstance()->setCurrentUser($_POST['login']);
                 header('Location: /articlesDesk');
 

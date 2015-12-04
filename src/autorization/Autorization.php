@@ -50,7 +50,7 @@ class Autorization
      * @param string $login
      * @param string $password
      *
-     * @throw \InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @return bool
      */
     public function signIn($login, $password)
@@ -65,21 +65,32 @@ class Autorization
     }
 
     /**
-     * @return null|UserRepository
+     * @param UserRepository $user
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function setCurrentUserId($user)
+    {
+        Assert::assert($user, 'user')->notEmpty()->string();
+
+        $_SESSION['login'] = $user;
+    }
+
+    /**
+     * @return UserRepository|null
      */
     public function getCurrentUser()
     {
-        if (isset($_SESSION['login'])) {
-            $users = new UserRepository();
-            $user = $users->findByCreditionals($_SESSION['login']);
-        } else {
-            $user = null;
+        if (!isset($_SESSION['login'])) {
+            return null;
         }
 
-        return $user;
+        return (new UserRepository())
+            ->findByCreditionals($_SESSION['login']);
     }
 
-    public function exitSession() {
+    public function exitSession()
+    {
 
         if (isset($_SESSION['login'])) {
             unset($_SESSION['login']);
@@ -89,20 +100,9 @@ class Autorization
     /**
      * @return bool
      */
-    public function checkAutorization() {
+    public function checkAutorization()
+    {
 
         return isset($_SESSION['login']);
-    }
-
-    /**
-     * @param UserRepository $user
-     *
-     * @throw \InvalidArgumentException
-     */
-    public function setCurrentUser($user)
-    {
-        Assert::assert($user, 'user')->notEmpty()->string();
-
-        $_SESSION['login'] = $user;
     }
 }

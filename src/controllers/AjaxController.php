@@ -14,7 +14,7 @@ use pers1307\blog\models;
 use KoKoKo\assert\Assert;
 use pers1307\blog\repository\ArticleRepository;
 
-class AjaxController extends Controller
+class AjaxController extends AbstractController
 {
     /**
      * @param int $id

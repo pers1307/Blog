@@ -16,7 +16,7 @@ use KoKoKo\assert\Assert;
 use pers1307\blog\repository\ArticleRepository;
 use pers1307\blog\entity\Article;
 
-class ArticlesDeskController extends Controller
+class ArticlesDeskController extends AbstractController
 {
     public function editArticleAction()
     {
@@ -128,6 +128,7 @@ class ArticlesDeskController extends Controller
 
     /**
      * @param Article $article
+     *
      * @return Array
      */
     protected function editArticle(Article $article)
