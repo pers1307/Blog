@@ -4,9 +4,17 @@ ehthumbs.db
 
 # Folder config file
 Desktop.ini
+src/config/Config.php
+log
+composer.phar
+composer.lock
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+vendor/
+.idea/
+
+
 
 # Windows Installer files
 *.cab
