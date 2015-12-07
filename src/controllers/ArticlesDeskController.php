@@ -76,14 +76,14 @@ class ArticlesDeskController extends AbstractController
                 );
             }
 
-            $errorAddArticle = $this->addArticle();
+            $addResult = $this->addArticle();
 
             $article = new ArticleRepository();
             $articles = $article->findAll();
 
             $params = [
                 'articles' => $articles,
-                'errorAddArticle' => $errorAddArticle,
+                'addResult' => $addResult,
                 'forContent' => 'articleDesk.html'
             ];
 
@@ -100,65 +100,85 @@ class ArticlesDeskController extends AbstractController
 
     /**
      * @return Array
+     * @throws \InvalidArgumentException|\Exception
      */
     protected function addArticle()
     {
-        /*
-        try {
-            if (!isset($_POST['name'])) {
-                throw new \InvalidArgumentException('Argument "name" is requred');
-            }
-
-
-        } catch (\Exception $exception) {
-
-        }
-        */
-
+        // Ром, у меня здесь затруднение есть: я раньше помещал данные в entity article до проверки, чтобы
+        // потом у меня данные на форме не потерялись после отправки. То есть я отправляю POST запрос
+        // данные на форме сбрасываются, потом они после обновления страницы, должны встать обратно в форму, чтобы
+        // юзер не забивал всю форму заново.
+        // Я не знаю как по правильному это сделать. Может вместо entity простой массив заполнять?
         if (isset($_POST['NewArticleName']) && isset($_POST['NewArticleText']) && isset($_POST['NewArticleAuthor'])) {
+            try {
 
-            $article = (new Article())
-                ->setName($_POST['NewArticleName'])
-                ->setAuthor($_POST['NewArticleAuthor'])
-                ->setText($_POST['NewArticleText']);
+                if (!isset($_POST['NewArticleName'])) {
+                    throw new \InvalidArgumentException('Аргумент "NewArticleName" на задан в POST массиве');
+                }
 
-            if (isset($_FILES['NewArticleImage'])) {
-                $article->setPathImage('img/' . $_FILES['NewArticleImage']['name']['0']);
-            }
+                if ($_POST['NewArticleName'] === '') {
+                    throw new \Exception(
+                        'Название статьи не может быть пустым!'
+                    );
+                }
 
-            if ($_POST['NewArticleName'] === '') {
-                return $this->setErrors('1', 'Название статьи не может быть пустым!', $article);
-            }
-            if ($_POST['NewArticleAuthor'] === '') {
-                return $this->setErrors('2', 'Статья не может быть без автора!', $article);
-            }
-            if (isset($_FILES['NewArticleImage'])) {
+                if (!isset($_POST['NewArticleText'])) {
+                    throw new \InvalidArgumentException('Аргумент "NewArticleText" на задан в POST массиве');
+                }
+
+                if ($_POST['NewArticleText'] === '') {
+                    throw new \Exception(
+                        'Текст статьи не может быть пустым!'
+                    );
+                }
+
+                if (!isset($_POST['NewArticleAuthor'])) {
+                    throw new \InvalidArgumentException('Аргумент "NewArticleAuthor" на задан в POST массиве');
+                }
+
+                if ($_POST['NewArticleAuthor'] === '') {
+                    throw new \Exception(
+                        'Статья не может быть без автора!'
+                    );
+                }
+
+                if (!isset($_FILES['NewArticleImage'])) {
+                    throw new \InvalidArgumentException('Аргумент "NewArticleImage" на задан в POST массиве');
+                }
+
                 if ($_FILES['NewArticleImage']['name']['0'] === '') {
-                    return $this->setErrors('3', 'Картинка не выбрана!', $article);
+                    throw new \Exception(
+                        'Картинка не выбрана!'
+                    );
                 }
+
                 if ($_FILES['NewArticleImage']['error']['0'] !== 0) {
-                    return $this->setErrors('3', 'Ошибка при загрузке картинки', $article);
+                    throw new \Exception(
+                        'Ошибка при загрузке картинки'
+                    );
                 }
-            } else {
-                return $this->setErrors('3', 'Картинка не выбрана!', $article);
+
+                $article = (new Article())
+                    ->setName(htmlspecialchars($_POST['NewArticleName']))
+                    ->setAuthor(htmlspecialchars($_POST['NewArticleAuthor']))
+                    ->setText(htmlspecialchars($_POST['NewArticleText']))
+                    ->setPathImage('img/' . $_FILES['NewArticleImage']['name']['0']);
+
+                copy($_FILES['NewArticleImage']['tmp_name']['0'], 'img/' . $_FILES['NewArticleImage']['name']['0']);
+
+                (new ArticleRepository())->insert($article);
+            } catch (\Exception $exception) {
+                return [
+                    'TextError' => $exception->getMessage(),
+                    'article' => $article
+                ];
             }
-            if ($_POST['NewArticleText'] === '') {
-                return $this->setErrors('4', 'Текст статьи не может быть пустым!', $article);
-            }
-
-            $articles = new ArticleRepository();
-            copy($_FILES['NewArticleImage']['tmp_name']['0'], 'img/' . $_FILES['NewArticleImage']['name']['0']);
-
-            $article->setPathImage('img/' . $_FILES['NewArticleImage']['name']['0']);
-            $articles->insert($article);
-            unset($_POST['NewArticleName'], $_POST['NewArticleText'], $_POST['NewArticleAuthor'], $_POST['NewArticleImage']);
-
-            return $this->setErrors('0', '', null);
-        } else {
-            unset($_POST['NewArticleName'], $_POST['NewArticleText'], $_POST['NewArticleAuthor'], $_POST['NewArticleImage']);
-
-            return $this->setErrors('0', '', null);
         }
+
+        return [
+            'TextError' => '',
+            'article' => null
+        ];
     }
 
     /**
@@ -168,6 +188,7 @@ class ArticlesDeskController extends AbstractController
      */
     protected function editArticle(Article $article)
     {
+        // Здесь та же проблема!
         if (isset($_POST['NewArticleName']) && isset($_POST['NewArticleText']) && isset($_POST['NewArticleAuthor'])) {
 
             if ($_POST['NewArticleName'] === '') {
@@ -216,13 +237,15 @@ class ArticlesDeskController extends AbstractController
     }
 
     /**
+     * todo: Удалить этот метод после перехода на Исключения
      * @param string code
      * @param string $text
-     * @param null|ArticleRepository $article
+     * @param ArticleRepository $article|null
      *
      * @return Array
      * @throws \InvalidArgumentException
      */
+
     protected function setErrors($code, $text, $article = null)
     {
         Assert::assert($code, 'code')->string();

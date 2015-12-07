@@ -12,24 +12,24 @@
             <div id="New-post">
                 <h3>Добавить новую статью в блог!</h3>
                 <form role="form" method="post" action="" enctype="multipart/form-data">
-                    {% if errorAddArticle['CodeError'] != 0 %}
+                    {% if addResult['TextError'] != '' %}
                         <div class="form-group alert-danger col-md-12">
-                            <h4>{{ errorAddArticle['TextError'] }}</h4>
+                            <h4>{{ addResult['TextError'] }}</h4>
                         </div>
                     {% endif %}
 
-                    <div class="form-group col-md-8 {{ (errorAddArticle['CodeError'] == '1') ? 'has-error' }}">
+                    <div class="form-group col-md-8 {{ (addResult['TextError'] == 'Название статьи не может быть пустым!') ? 'has-error' }}">
                         <label for="exampleInputEmail1">Название статьи</label>
-                        <input type="text" class="form-control" placeholder="Название статьи" name="NewArticleName" value="{{ (errorAddArticle['CodeError'] != '0') ? errorAddArticle['Article'].getName() }}">
+                        <input type="text" class="form-control" placeholder="Название статьи" name="NewArticleName" value="{{ (addResult['TextError'] != '') ? errorAddArticle['Article'].getName() }}">
                     </div>
-                    <div class="form-group col-md-4 {{ (errorAddArticle['CodeError'] == '2') ? 'has-error' }}">
+                    <div class="form-group col-md-4 {{ (addResult['TextError'] == 'Статья не может быть без автора!') ? 'has-error' }}">
                         <label for="exampleInputPassword1">Автор статьи</label>
-                        <input type="text" class="form-control" placeholder="Автор статьи" value="{{ (errorAddArticle['CodeError'] != '0') ? errorAddArticle['Article'].getAuthor() : 'Перескоков Юрий' }}" name="NewArticleAuthor">
+                        <input type="text" class="form-control" placeholder="Автор статьи" value="{{ (addResult['TextError'] != '') ? errorAddArticle['Article'].getAuthor() : 'Перескоков Юрий' }}" name="NewArticleAuthor">
                     </div>
 
-                    <div class="form-group col-md-12" {{ (errorAddArticle['CodeError'] == '3') ? "style='outline: 1px solid #A90006'" }} >
+                    <div class="form-group col-md-12" {{ (addResult['TextError'] == 'Картинка не выбрана!') ? "style='outline: 1px solid #A90006'" }} >
 
-                        {% if errorAddArticle['CodeError'] != 0 %}
+                        {% if addResult['TextError'] != '' %}
                             <label for="exampleInputFile">Текущая картинка: {{ errorAddArticle['Article'].getPathImage() }} </label>
                             <p><label for="exampleInputFile">Добавьте её снова!</label></p>
                         {% endif %}
@@ -38,9 +38,9 @@
                         <input type="file" name="NewArticleImage[]" multiple="multiple">
                     </div>
 
-                    <div class="form-group col-md-12 {{ (errorAddArticle['CodeError'] == '4') ? 'has-error' }}">
+                    <div class="form-group col-md-12 {{ (addResult['TextError'] == 'Текст статьи не может быть пустым!') ? 'has-error' }}">
                         <label for="exampleInputFile">Текст статьи: </label>
-                        <textarea id="NewArticle" class="form-control" rows="6" name="NewArticleText">{{ (errorAddArticle['CodeError'] != '0') ? errorAddArticle['Article'].getText() }}</textarea>
+                        <textarea id="NewArticle" class="form-control" rows="6" name="NewArticleText">{{ (addResult['TextError'] != '') ? errorAddArticle['Article'].getText() }}</textarea>
                     </div>
 
                     <div class="form-group">

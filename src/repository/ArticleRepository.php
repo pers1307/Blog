@@ -30,13 +30,7 @@ class ArticleRepository
 
         $resultArray = [];
         foreach ($allArticles as $row) {
-            $resultArray[] = (new Article())
-                ->setId((int)$row['id'])
-                ->setCreatedAt($row['Date'])
-                ->setName($row['ArticleName'])
-                ->setAuthor($row['Author'])
-                ->setText($row['Article'])
-                ->setPathImage($row['Image']);
+            $resultArray[] = $this->inflate($row);
         }
 
         return $resultArray;
@@ -105,13 +99,7 @@ class ArticleRepository
 
         $resultArray = [];
         foreach($limitArticles as $article) {
-            $resultArray[] = (new Article())
-                ->setId((int)$article['id'])
-                ->setCreatedAt($article['Date'])
-                ->setName($article['ArticleName'])
-                ->setAuthor($article['Author'])
-                ->setText($article['Article'])
-                ->setPathImage($article['Image']);
+            $resultArray[] = $this->inflate($article);
         }
 
         return $resultArray;
@@ -150,19 +138,13 @@ class ArticleRepository
         $stmt = $connection->prepare('SELECT * FROM articles WHERE id = :id');
         $stmt->bindParam('id', $id, \PDO::PARAM_INT);
         $stmt->execute();
-        $article = $stmt->fetch();
+        $found = $stmt->fetch();
 
-        if ($stmt->rowCount() !== 0) {
-            $resultArticle = (new Article())
-                ->setId((int)$article['id'])
-                ->setCreatedAt($article['Date'])
-                ->setName($article['ArticleName'])
-                ->setAuthor($article['Author'])
-                ->setText($article['Article'])
-                ->setPathImage($article['Image']);
-        } else {
-            $resultArticle = null;
+        if (is_null($found)) {
+            return null;
         }
+
+        $resultArticle = $this->inflate($found);
 
         return $resultArticle;
     }
@@ -191,5 +173,29 @@ class ArticleRepository
             'text' => $article->getText(),
             'img' => $article->getPathImage()
         ]);
+    }
+
+    /**
+     * @param array $articleRow
+     *
+     * @return Article
+     * @throws \InvalidArgumentException
+     */
+    private function inflate(array $articleRow)
+    {
+        Assert::assert((int)$articleRow['id'], '$articleRow["id"]')->positive()->int();
+        Assert::assert($articleRow['Date'], '$articleRow["Date"]')->notEmpty()->string();
+        Assert::assert($articleRow['ArticleName'], '$articleRow["ArticleName"]')->notEmpty()->string();
+        Assert::assert($articleRow['Author'], '$articleRow["Author"]')->notEmpty()->string();
+        Assert::assert($articleRow['Article'], '$articleRow["Article"]')->notEmpty()->string();
+        Assert::assert($articleRow['Image'], '$articleRow["Image"]')->notEmpty()->string();
+
+        return (new Article())
+            ->setId((int)$articleRow['id'])
+            ->setCreatedAt($articleRow['Date'])
+            ->setName($articleRow['ArticleName'])
+            ->setAuthor($articleRow['Author'])
+            ->setText($articleRow['Article'])
+            ->setPathImage($articleRow['Image']);
     }
 }
