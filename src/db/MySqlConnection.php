@@ -14,9 +14,7 @@ use pers1307\blog\config;
 
 class MySqlConnection
 {
-    /**
-     * @var \PDO
-     */
+    /** @var \PDO */
     private static $connection;
 
     /**

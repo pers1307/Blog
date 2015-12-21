@@ -15,7 +15,7 @@ use KoKoKo\assert\Assert;
 use pers1307\blog\repository\ArticleRepository;
 
 
-class IndexController extends Controller
+class IndexController extends AbstractController
 {
     public function indexAction()
     {

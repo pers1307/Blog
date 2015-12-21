@@ -39,7 +39,11 @@ class Autorization
      */
     public static function getInstance()
     {
-        return (self::$instance === null) ? self::$instance = new self() : self::$instance;
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     /**
@@ -61,22 +65,29 @@ class Autorization
     }
 
     /**
-     * @return null|UserRepositor
+     * @param int $userId
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function setCurrentUserId($userId)
+    {
+        Assert::assert($userId, 'userId')->notEmpty()->int();
+        $_SESSION['userId'] = $userId;
+    }
+
+    /**
+     * @return UserRepository|null
      */
     public function getCurrentUser()
     {
-        if (isset($_SESSION['login'])) {
-            $users = new UserRepository();
-            $user = $users->findByCreditionals($_SESSION['login']);
-        } else {
-            $user = null;
+        if (!isset($_SESSION['userId'])) {
+            return null;
         }
-
-        return $user;
+        return $_SESSION['userId'];
     }
 
-    public function exitSession() {
-
+    public function exitSession()
+    {
         if (isset($_SESSION['login'])) {
             unset($_SESSION['login']);
         }
@@ -85,20 +96,8 @@ class Autorization
     /**
      * @return bool
      */
-    public function checkAutorization() {
-
-        return isset($_SESSION['login']);
-    }
-
-    /**
-     * @param string $user
-     *
-     * @throw \InvalidArgumentException
-     */
-    public function setCurrentUser($user)
+    public function checkAutorization()
     {
-        Assert::assert($user, 'user')->notEmpty()->string();
-
-        $_SESSION['login'] = $user;
+        return isset($_SESSION['login']);
     }
 }

@@ -9,11 +9,9 @@
  */
 
 namespace pers1307\blog\repository;
-
 use pers1307\blog\db;
 use KoKoKo\assert\Assert;
 use pers1307\blog\entity\Article;
-
 
 class ArticleRepository
 {
@@ -27,21 +25,12 @@ class ArticleRepository
         $sth = $connection->prepare($sql);
         $sth->execute();
         $allArticles = $sth->fetchAll();
-
         $resultArray = [];
         foreach ($allArticles as $row) {
-            $resultArray[] = (new Article())
-                ->setId((int)$row['id'])
-                ->setCreatedAt($row['Date'])
-                ->setName($row['ArticleName'])
-                ->setAuthor($row['Author'])
-                ->setText($row['Article'])
-                ->setPathImage($row['Image']);
+            $resultArray[] = $this->inflate($row);
         }
-
         return $resultArray;
     }
-
     /**
      * @param article $article
      *
@@ -53,20 +42,18 @@ class ArticleRepository
         Assert::assert($article->getText(), 'article->getText()')->notEmpty()->string();
         Assert::assert($article->getAuthor(), 'article->getAuthor()')->notEmpty()->string();
         Assert::assert($article->getPathImage(), 'article->getPathImage()')->notEmpty()->string();
-
         $connection = (new db\MySqlConnection())->getConnection();
         $stmt = $connection->prepare(
             'INSERT INTO articles(ArticleName, Author, Article, Image)
-            VALUES (:NameArticle, :Auth, :TextArticle, :Img)'
+            VALUES (:nameArticle, :auth, :textArticle, :img)'
         );
         $stmt->execute([
-            'NameArticle' => $article->getName(),
-            'Auth' => $article->getAuthor(),
-            'TextArticle' => $article->getText(),
-            'Img' => $article->getPathImage()
+            'nameArticle' => $article->getName(),
+            'auth' => $article->getAuthor(),
+            'textArticle' => $article->getText(),
+            'img' => $article->getPathImage()
         ]);
     }
-
     /**
      * @param int $id
      *
@@ -75,43 +62,34 @@ class ArticleRepository
     public function deleteById($id)
     {
         Assert::assert($id, 'id')->notEmpty()->int();
-
         $connection = (new db\MySqlConnection())->getConnection();
         $stmt = $connection->prepare('DELETE FROM articles WHERE id = :id');
         $stmt->execute(['id' => $id]);
     }
-
     /**
-     * @param int $rowCount
+     * @param int $limit
      * @param int $offset
      *
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function findByLimit($rowCount, $offset = 0)
+    public function findByLimit($limit, $offset = 0)
     {
-        Assert::assert($rowCount, 'rowCount')->notEmpty()->int();
+        Assert::assert($limit, 'limit')->notEmpty()->int();
         Assert::assert($offset, 'offset')->int();
-
         $forConnect = new db\MySqlConnection();
         $connection = $forConnect->getConnection();
-        $stmt = $connection->query('SELECT * FROM articles LIMIT ' . $offset . ', ' . $rowCount);
+        $stmt = $connection->prepare('SELECT * FROM articles LIMIT :offset, :limit');
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->execute();
         $limitArticles = $stmt->fetchAll();
-
         $resultArray = [];
         foreach($limitArticles as $article) {
-            $resultArray[] = (new Article())
-                ->setId((int)$article['id'])
-                ->setCreatedAt($article['Date'])
-                ->setName($article['ArticleName'])
-                ->setAuthor($article['Author'])
-                ->setText($article['Article'])
-                ->setPathImage($article['Image']);
+            $resultArray[] = $this->inflate($article);
         }
-
         return $resultArray;
     }
-
     /**
      * @return int
      */
@@ -125,10 +103,8 @@ class ArticleRepository
         );
         $result = $stmt->fetch();
         $result = $result['result'];
-
         return $result;
     }
-
     /**
      * @param int $id
      *
@@ -138,28 +114,18 @@ class ArticleRepository
     public function findById($id)
     {
         Assert::assert($id, 'id')->notEmpty()->int();
-
         $ForConnect = new db\MySqlConnection();
         $connection = $ForConnect->getConnection();
-
-        $stmt = $connection->query('SELECT * FROM articles WHERE id = ' . $id);
-        $article = $stmt->fetch();
-
-        if ($stmt->rowCount() !== 0) {
-            $resultArticle = (new Article())
-                ->setId((int)$article['id'])
-                ->setCreatedAt($article['Date'])
-                ->setName($article['ArticleName'])
-                ->setAuthor($article['Author'])
-                ->setText($article['Article'])
-                ->setPathImage($article['Image']);
-        } else {
-            $resultArticle = null;
+        $stmt = $connection->prepare('SELECT * FROM articles WHERE id = :id');
+        $stmt->bindParam('id', $id, \PDO::PARAM_INT);
+        $stmt->execute();
+        $found = $stmt->fetch();
+        if (is_null($found)) {
+            return null;
         }
-
+        $resultArticle = $this->inflate($found);
         return $resultArticle;
     }
-
     /**
      * @param article $article
      */
@@ -176,7 +142,6 @@ class ArticleRepository
             WHERE
             id = :id'
         );
-
         $stmt->execute([
             'id' => $article->getId(),
             'articleName' => $article->getName(),
@@ -184,5 +149,27 @@ class ArticleRepository
             'text' => $article->getText(),
             'img' => $article->getPathImage()
         ]);
+    }
+    /**
+     * @param array $articleRow
+     *
+     * @return Article
+     * @throws \InvalidArgumentException
+     */
+    private function inflate(array $articleRow)
+    {
+        Assert::assert((int)$articleRow['id'], '$articleRow["id"]')->positive()->int();
+        Assert::assert($articleRow['Date'], '$articleRow["Date"]')->notEmpty()->string();
+        Assert::assert($articleRow['ArticleName'], '$articleRow["ArticleName"]')->notEmpty()->string();
+        Assert::assert($articleRow['Author'], '$articleRow["Author"]')->notEmpty()->string();
+        Assert::assert($articleRow['Article'], '$articleRow["Article"]')->notEmpty()->string();
+        Assert::assert($articleRow['Image'], '$articleRow["Image"]')->notEmpty()->string();
+        return (new Article())
+            ->setId((int)$articleRow['id'])
+            ->setCreatedAt($articleRow['Date'])
+            ->setName($articleRow['ArticleName'])
+            ->setAuthor($articleRow['Author'])
+            ->setText($articleRow['Article'])
+            ->setPathImage($articleRow['Image']);
     }
 }

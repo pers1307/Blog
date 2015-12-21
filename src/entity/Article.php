@@ -40,7 +40,7 @@ class Article
      */
     public function setId($id)
     {
-        Assert::assert($id, 'id')->notEmpty()->int();
+        Assert::assert($id, 'id')->notEmpty()->positive()->int();
 
         $this->id = $id;
 
@@ -63,7 +63,7 @@ class Article
      */
     public function setName($name)
     {
-        Assert::assert($name, 'name')->string();
+        Assert::assert($name, 'name')->notEmpty()->string();
 
         $this->name = $name;
 
@@ -132,7 +132,7 @@ class Article
      */
     public function setText($text)
     {
-        Assert::assert($text, 'text')->string();
+        Assert::assert($text, 'text')->notEmpty()->string();
 
         $this->text = $text;
 

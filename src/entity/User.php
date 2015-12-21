@@ -34,7 +34,7 @@ class User
      */
     public function setId($id)
     {
-        Assert::assert($id, 'id')->notEmpty()->int();
+        Assert::assert($id, 'id')->notEmpty()->positive()->int();
 
         $this->id = $id;
 

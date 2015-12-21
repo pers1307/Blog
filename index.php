@@ -12,8 +12,8 @@ autorization\Autorization::getInstance()->starSession();
 $router = new RouteCollector();
 
 $router->any('/', ['pers1307\blog\controllers\IndexController', 'indexAction']);
-$router->any('/articlesDesk', ['pers1307\blog\controllers\ArticlesDeskController', 'articlesDeskAction']);
-$router->any('/deleteArticle/{id}',['pers1307\blog\controllers\AjaxController','deleteArticle']);
+$router->any('/articlesDesk', ['pers1307\blog\controllers\ArticlesDeskController', 'findAllAction']);
+$router->any('/deleteArticle/{id}',['pers1307\blog\controllers\ArticlesDeskController','deleteArticle']);
 $router->any('/EditArticle',['pers1307\blog\controllers\ArticlesDeskController','editArticleAction']);
 
 $dispatcher = new Dispatcher($router->getData());

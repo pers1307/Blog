@@ -13,7 +13,7 @@ namespace pers1307\blog\config;
 abstract class DefaultConfig
 {
     const HTTP_HOST    = 'localhost';
-    const PDO_DSN      = 'mysql:dbname=myblog;host=127.0.0.1';
-    const PDO_USER     = 'pers';
-    const PDO_PASSWORD = '13071992';
+    const PDO_DSN      = 'mysql:dbname=blog;host=127.0.0.1';
+    const PDO_USER     = 'root';
+    const PDO_PASSWORD = '';
 }
