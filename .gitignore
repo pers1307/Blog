@@ -7,7 +7,6 @@ Desktop.ini
 src/config/Config.php
 log
 composer.phar
-composer.lock
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
