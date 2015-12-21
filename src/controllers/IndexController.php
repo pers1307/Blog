@@ -12,7 +12,7 @@ namespace pers1307\blog\controllers;
 
 use pers1307\blog\autorization;
 use KoKoKo\assert\Assert;
-use 
+use
 
 
 class IndexController extends Controller
