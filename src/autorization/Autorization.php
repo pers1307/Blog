@@ -12,6 +12,7 @@ namespace pers1307\blog\autorization;
 
 use pers1307\blog\models;
 use KoKoKo\assert\Assert;
+use pers1307\blog\repository\UserRepository;
 
 class Autorization
 {
@@ -53,19 +54,19 @@ class Autorization
         Assert::assert($login, 'login')->notEmpty()->string();
         Assert::assert($password, 'password')->notEmpty()->string();
 
-        $users = new models\Users();
+        $users = new UserRepository();
         $user = $users->findByCreditionals($login);
 
         return !is_null($user) && \password_verify($password, $user->getPassword());
     }
 
     /**
-     * @return null|models\User
+     * @return null|UserRepositor
      */
     public function getCurrentUser()
     {
         if (isset($_SESSION['login'])) {
-            $users = new models\Users();
+            $users = new UserRepository();
             $user = $users->findByCreditionals($_SESSION['login']);
         } else {
             $user = null;
@@ -90,7 +91,7 @@ class Autorization
     }
 
     /**
-     * @param models\User $user
+     * @param string $user
      *
      * @throw \InvalidArgumentException
      */

@@ -12,7 +12,7 @@ namespace pers1307\blog\controllers;
 
 use pers1307\blog\autorization;
 use KoKoKo\assert\Assert;
-use
+use pers1307\blog\repository\ArticleRepository;
 
 
 class IndexController extends Controller
@@ -111,7 +111,7 @@ class IndexController extends Controller
             $res['block'] = 'start';
         }
 
-        $article = new models\Articles();
+        $article = new ArticleRepository();
         $countArticles = $article->count();
 
         if ( $currentPage > floor($countArticles / $postOnPage)) {

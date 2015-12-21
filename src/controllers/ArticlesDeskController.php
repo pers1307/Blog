@@ -10,7 +10,8 @@
 
 namespace pers1307\blog\controllers;
 
-use pers1307\blog\models;
+use pers1307\blog\repository\ArticleRepository;
+use pers1307\blog\entity\Article;
 use pers1307\blog\autorization;
 use KoKoKo\assert\Assert;
 
@@ -24,7 +25,7 @@ class ArticlesDeskController extends Controller
             }
 
             $id = (int)$_GET['Edit'];
-            $modelArticle = new models\Articles();
+            $modelArticle = new ArticleRepository();
             $article = $modelArticle->findById($id);
             if ($article === null) {
                 $params = [
@@ -54,7 +55,7 @@ class ArticlesDeskController extends Controller
         if (autorization\Autorization::getInstance()->checkAutorization()) {
             $errorAddArticle = $this->addArticle();
 
-            $article = new models\Articles();
+            $article = new ArticleRepository();
             $articles = $article->findAll();
 
             $params = [
@@ -80,7 +81,7 @@ class ArticlesDeskController extends Controller
     {
         if (isset($_POST['NewArticleName']) && isset($_POST['NewArticleText']) && isset($_POST['NewArticleAuthor'])) {
 
-            $article = (new models\Article())
+            $article = (new ArticleRepository())
                 ->setName($_POST['NewArticleName'])
                 ->setAuthor($_POST['NewArticleAuthor'])
                 ->setText($_POST['NewArticleText']);
@@ -109,7 +110,7 @@ class ArticlesDeskController extends Controller
                 return $this->setErrors('4', 'Текст статьи не может быть пустым!', $article);
             }
 
-            $articles = new models\Articles();
+            $articles = new ArticleRepository();
             copy($_FILES['NewArticleImage']['tmp_name']['0'], 'img/' . $_FILES['NewArticleImage']['name']['0']);
 
             $article->setPathImage('img/' . $_FILES['NewArticleImage']['name']['0']);
@@ -125,10 +126,10 @@ class ArticlesDeskController extends Controller
     }
 
     /**
-     * @param models\Article $article
+     * @param Article $article
      * @return Array
      */
-    protected function editArticle(models\Article $article)
+    protected function editArticle(Article $article)
     {
         if (isset($_POST['NewArticleName']) && isset($_POST['NewArticleText']) && isset($_POST['NewArticleAuthor'])) {
 
@@ -156,7 +157,7 @@ class ArticlesDeskController extends Controller
                 return $this->setErrors('4', 'Текст статьи не может быть пустым!');
             }
 
-            $articles = new models\Articles();
+            $articles = new ArticleRepository();
             if ($pathImage === '') {
                 copy($_FILES['NewArticleImage']['tmp_name']['0'], 'img/' . $_FILES['NewArticleImage']['name']['0']);
                 $pathImage = 'img/'.$_FILES['NewArticleImage']['name']['0'];
@@ -180,7 +181,7 @@ class ArticlesDeskController extends Controller
     /**
      * @param string code
      * @param string $text
-     * @param null|models\Article $article
+     * @param null|Article $article
      *
      * @return Array
      * @throws \InvalidArgumentException
