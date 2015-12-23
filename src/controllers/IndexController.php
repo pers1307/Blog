@@ -10,9 +10,10 @@
 
 namespace pers1307\blog\controllers;
 
-use pers1307\blog\autorization;
 use KoKoKo\assert\Assert;
 use pers1307\blog\repository\ArticleRepository;
+use pers1307\blog\autorization\Autorization;
+use pers1307\blog\repository\UserRepository;
 
 
 class IndexController extends AbstractController
@@ -23,7 +24,7 @@ class IndexController extends AbstractController
         $error = $this->checkUser();
 
         if ($error === 2) {
-            $params['user'] = autorization\Autorization::getInstance()->getCurrentUser();
+            $params['user'] = Autorization::getInstance()->getCurrentUser();
 
             if ($params['user'] === null) {
                 $params['user'] = '0';
@@ -34,6 +35,10 @@ class IndexController extends AbstractController
         $postOnPage = 3;
         $rez = $this->getArticles($currentPage, (int)$postOnPage);
         $articles = $rez['cutArticles'];
+
+        if (empty($articles)) {
+            $currentPage = 0;
+        }
 
         $params = [
             'articles' => $articles,
@@ -53,25 +58,22 @@ class IndexController extends AbstractController
     protected function checkUser()
     {
         if (isset($_GET['Exit'])) {
-            autorization\Autorization::getInstance()->exitSession();
+            Autorization::getInstance()->exitSession();
         }
-
         if (isset($_POST['login']) && isset($_POST['password'])) {
-
             if ($_POST['login'] === '' || $_POST['password'] === '') {
                 return 1;
             }
-            if (autorization\Autorization::getInstance()->signIn($_POST['login'], $_POST['password'])) {
-                autorization\Autorization::getInstance()->setCurrentUser($_POST['login']);
+            if (Autorization::getInstance()->signIn($_POST['login'], $_POST['password'])) {
+                $user = (new UserRepository())->findByCreditionals($_POST['login']);
+                Autorization::getInstance()->setCurrentUserId($user->getId());
                 header('Location: /articlesDesk');
-
                 exit();
             } else {
                 return 1;
             }
         }
-
-        if (autorization\Autorization::getInstance()->checkAutorization() === false) {
+        if (Autorization::getInstance()->checkAutorization() === false) {
             return 0;
         } else {
             return 2;
@@ -118,6 +120,9 @@ class IndexController extends AbstractController
             $currentPage = ceil($countArticles / $postOnPage);
         }
         $offset = ($currentPage - 1) * $postOnPage;
+        if ($offset < 0) {
+            $offset = 0;
+        }
         $articles = $article->findByLimit((int)$postOnPage, (int)$offset);
 
         if (count($articles) < $postOnPage) {

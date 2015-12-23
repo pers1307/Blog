@@ -10,16 +10,16 @@ Target Server Type    : MYSQL
 Target Server Version : 50621
 File Encoding         : 65001
 
-Date: 2015-12-21 19:58:02
+Date: 2015-12-23 21:36:15
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for `article`
+-- Table structure for `articles`
 -- ----------------------------
-DROP TABLE IF EXISTS `article`;
-CREATE TABLE `article` (
+DROP TABLE IF EXISTS `articles`;
+CREATE TABLE `articles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `createAt` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
   `name` varchar(50) NOT NULL,
@@ -27,10 +27,10 @@ CREATE TABLE `article` (
   `content` text NOT NULL,
   `logoId` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`,`authorId`,`createAt`,`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 -- ----------------------------
--- Records of article
+-- Records of articles
 -- ----------------------------
 
 -- ----------------------------
@@ -69,11 +69,12 @@ CREATE TABLE `roles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of roles
 -- ----------------------------
+INSERT INTO `roles` VALUES ('1', 'admin');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -85,8 +86,9 @@ CREATE TABLE `users` (
   `login` varchar(50) NOT NULL DEFAULT '',
   `password` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`,`roleId`,`login`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of users
 -- ----------------------------
+INSERT INTO `users` VALUES ('1', '1', 'pers1307', '1');

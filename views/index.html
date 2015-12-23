@@ -25,24 +25,26 @@
                 <h1>В данный момент в блоге нет статей!</h1>
             {% endfor %}
 
-            <ul class="pagination pagination-lg">
+            {% if page != 0 %}
+                <ul class="pagination pagination-lg">
 
-                {% if page != 1 %}
+                    {% if page != 1 %}
                     <li><a href='?Page={{ page - 1 }}'>&laquo; Назад</a></li>
-                {% endif %}
-
-                {% for count in 1..countPage %}
-                    {% if page == count %}
-                        <li class='active'><a href='?Page={{ count  }}'>{{ count  }}</a></li>
-                    {% else %}
-                        <li><a href='?Page={{ count  }}'>{{ count  }}</a></li>
                     {% endif %}
-                {% endfor %}
 
-                {% if page != countPage %}
+                    {% for count in 1..countPage %}
+                    {% if page == count %}
+                    <li class='active'><a href='?Page={{ count  }}'>{{ count  }}</a></li>
+                    {% else %}
+                    <li><a href='?Page={{ count  }}'>{{ count  }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page != countPage %}
                     <li><a href='?Page={{ page + 1 }}'>Вперед &raquo;</a></li>
-                {% endif %}
-            </ul>
+                    {% endif %}
+                </ul>
+            {% endif %}
         </div>
 
         <div class="col-md-2 col-md-offset-1">

@@ -25,22 +25,30 @@ class ArticlesDeskController extends AbstractController
     {
         try {
             if (!Autorization::getInstance()->checkAutorization()) {
-                throw new \Exception(
-                    "У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь."
-                );
+                $params = [
+                    'forContent' => 'template/alertAutorization.html',
+                    'message' => 'У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь.'
+                ];
+
+                return $this->renderByTwig('layoutFilled.html', $params);
             }
             if (!isset($_GET['articleId'])) {
-                throw new \Exception(
-                    "Такой статьи не существует."
-                );
+                $params = [
+                    'forContent' => 'template/alertAutorization.html',
+                    'message' => 'Такой статьи не существует.'
+                ];
+
+                return $this->renderByTwig('layoutFilled.html', $params);
             }
-            $id = (int)htmlspecialchars($_GET['articleId']);
-            $id = Assert::assert($id, 'id')->notEmpty()->positive()->int()->get();
+
+
+            $id = $_GET['articleId'];
+            $id = Assert::assert($id, 'id')->digit($id)->toInt()->get();
             $modelArticle = new ArticleRepository();
             $article = $modelArticle->findById($id);
             if ($article === null) {
                 throw new \Exception(
-                    "Такой статьи не существует."
+                    'Такой статьи не существует.'
                 );
             }
             $errorAddArticle = $this->editArticle($article);
@@ -52,18 +60,19 @@ class ArticlesDeskController extends AbstractController
             return $this->renderByTwig('layoutFilled.html', $params);
         } catch (\Exception $exception) {
             $params = [
-                'forContent' => 'template/alert.html',
+                'forContent' => 'template/alertAutorization.html',
                 'message' => $exception->getMessage()
             ];
             return $this->renderByTwig('layoutFilled.html', $params);
         }
     }
+
     public function findAllAction()
     {
         try {
             if (!Autorization::getInstance()->checkAutorization()) {
                 throw new \Exception(
-                    "У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь."
+                    'У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь.'
                 );
             }
             $addResult = $this->addArticle();
@@ -89,68 +98,55 @@ class ArticlesDeskController extends AbstractController
      */
     protected function addArticle()
     {
-        // Ром, у меня здесь затруднение есть: я раньше помещал данные в entity article до проверки, чтобы
-        // потом у меня данные на форме не потерялись после отправки. То есть я отправляю POST запрос
-        // данные на форме сбрасываются, потом они после обновления страницы, должны встать обратно в форму, чтобы
-        // юзер не забивал всю форму заново.
-        // Я не знаю как по правильному это сделать. Может вместо entity простой массив заполнять?
-        if (isset($_POST['NewArticleName']) && isset($_POST['NewArticleText']) && isset($_POST['NewArticleAuthor'])) {
-            try {
-                if (!isset($_POST['NewArticleName'])) {
-                    throw new \InvalidArgumentException('Аргумент "NewArticleName" на задан в POST массиве');
-                }
-                if ($_POST['NewArticleName'] === '') {
-                    throw new \Exception(
-                        'Название статьи не может быть пустым!'
-                    );
-                }
-                if (!isset($_POST['NewArticleText'])) {
-                    throw new \InvalidArgumentException('Аргумент "NewArticleText" на задан в POST массиве');
-                }
-                if ($_POST['NewArticleText'] === '') {
-                    throw new \Exception(
-                        'Текст статьи не может быть пустым!'
-                    );
-                }
-                if (!isset($_POST['NewArticleAuthor'])) {
-                    throw new \InvalidArgumentException('Аргумент "NewArticleAuthor" на задан в POST массиве');
-                }
-                if ($_POST['NewArticleAuthor'] === '') {
-                    throw new \Exception(
-                        'Статья не может быть без автора!'
-                    );
-                }
-                if (!isset($_FILES['NewArticleImage'])) {
-                    throw new \InvalidArgumentException('Аргумент "NewArticleImage" на задан в POST массиве');
-                }
-                if ($_FILES['NewArticleImage']['name']['0'] === '') {
-                    throw new \Exception(
-                        'Картинка не выбрана!'
-                    );
-                }
-                if ($_FILES['NewArticleImage']['error']['0'] !== 0) {
-                    throw new \Exception(
-                        'Ошибка при загрузке картинки'
-                    );
-                }
-                $article = (new Article())
-                    ->setName(htmlspecialchars($_POST['NewArticleName']))
-                    ->setAuthor(htmlspecialchars($_POST['NewArticleAuthor']))
-                    ->setText(htmlspecialchars($_POST['NewArticleText']))
-                    ->setPathImage('img/' . $_FILES['NewArticleImage']['name']['0']);
-                copy($_FILES['NewArticleImage']['tmp_name']['0'], 'img/' . $_FILES['NewArticleImage']['name']['0']);
-                (new ArticleRepository())->insert($article);
-            } catch (\Exception $exception) {
-                return [
-                    'TextError' => $exception->getMessage(),
-                    'article' => $article
-                ];
+        $preArticle = [];
+
+        try {
+            if (!isset($_POST['newArticleName'])) {
+                throw new \InvalidArgumentException('Аргумент "newArticleName" на задан в POST массиве');
             }
+            $preArticle['name'] = htmlspecialchars($_POST['newArticleName']);
+
+            if (!isset($_POST['newArticleText'])) {
+                throw new \InvalidArgumentException('Аргумент "newArticleText" на задан в POST массиве');
+            }
+            $preArticle['text'] = htmlspecialchars($_POST['newArticleText']);
+
+            if (!isset($_POST['newArticleAuthor'])) {
+                throw new \InvalidArgumentException('Аргумент "newArticleAuthor" на задан в POST массиве');
+            }
+            $preArticle['author'] = htmlspecialchars($_POST['newArticleAuthor']);
+
+            if (!isset($_FILES['newArticleImage'])) {
+                throw new \InvalidArgumentException('Аргумент "newArticleImage" на задан в POST массиве');
+            }
+            if ($_FILES['newArticleImage']['name']['0'] === '') {
+                throw new \Exception(
+                    'Картинка не выбрана!'
+                );
+            }
+            if ($_FILES['newArticleImage']['error']['0'] !== 0) {
+                throw new \Exception(
+                    'Ошибка при загрузке картинки'
+                );
+            }
+            $preArticle['pathImage'] = 'img/' . $_FILES['newArticleImage']['name']['0'];
+
+
+            $article = new Article();
+            $article->fromArray($preArticle);
+            copy($_FILES['newArticleImage']['tmp_name']['0'], 'img/' . $_FILES['newArticleImage']['name']['0']);
+
+            // Не переработано
+            (new ArticleRepository())->insert($article);
+
+
+
+        } catch (\Exception $exception) {
+            return [
+                'TextError' => $exception->getMessage(),
+                'article' => $preArticle
+            ];
         }
-        return [
-            'TextError' => '',
-            'article' => null
-        ];
     }
     /**
      * @param Article $article

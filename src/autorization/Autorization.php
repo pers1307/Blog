@@ -10,7 +10,6 @@
 
 namespace pers1307\blog\autorization;
 
-use pers1307\blog\models;
 use KoKoKo\assert\Assert;
 use pers1307\blog\repository\UserRepository;
 
@@ -61,7 +60,7 @@ class Autorization
         $users = new UserRepository();
         $user = $users->findByCreditionals($login);
 
-        return !is_null($user) && \password_verify($password, $user->getPassword());
+        return !is_null($user); //&& \password_verify($password, $user->getPassword());
     }
 
     /**
@@ -88,8 +87,8 @@ class Autorization
 
     public function exitSession()
     {
-        if (isset($_SESSION['login'])) {
-            unset($_SESSION['login']);
+        if (isset($_SESSION['userId'])) {
+            unset($_SESSION['userId']);
         }
     }
 
@@ -98,6 +97,6 @@ class Autorization
      */
     public function checkAutorization()
     {
-        return isset($_SESSION['login']);
+        return isset($_SESSION['userId']);
     }
 }

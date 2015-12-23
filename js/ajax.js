@@ -4,7 +4,6 @@ $(document).ready(function(){
         event.preventDefault();
 
         var del = $(this).attr("data-delete");
-
         var route = '/deleteArticle/' + del;
 
         $.ajax({
@@ -20,6 +19,6 @@ $(document).ready(function(){
                     alert('Произошла ошибка при удалении статьи!');
                 }
             }
-        }); // $.ajax
-    }); // $('.delete').click
-}); // $(document).ready
+        });
+    });
+});

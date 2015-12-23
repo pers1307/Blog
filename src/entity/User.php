@@ -26,6 +26,7 @@ class User
     /** @var string */
     private $password;
 
+
     /**
      * @param int $id
      *

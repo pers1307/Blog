@@ -46,7 +46,14 @@ class UserRepository
         Assert::assert($login, 'login')->notEmpty()->string();
 
         $connection = (new db\MySqlConnection())->getConnection();
-        $stmt = $connection->prepare('SELECT * FROM users WHERE Login = :login');
+        $stmt = $connection->prepare('
+            SELECT *
+            FROM users
+            JOIN roles
+            ON users.roleId = roles.id
+            WHERE users.login = :login
+        ');
+
         $stmt->execute(['login' => $login]);
 
         $row = $stmt->fetch();
@@ -70,9 +77,9 @@ class UserRepository
 
         $resultUser = (new User())
             ->setId((int)$row['id'])
-            ->setLogin($row['Login'])
-            ->setRole($row['Privileges'])
-            ->setPassword($row['Password']);
+            ->setLogin($row['login'])
+            ->setRole($row['name'])
+            ->setPassword($row['password']);
 
         return $resultUser;
     }

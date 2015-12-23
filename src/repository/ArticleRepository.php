@@ -42,6 +42,7 @@ class ArticleRepository
         Assert::assert($article->getText(), 'article->getText()')->notEmpty()->string();
         Assert::assert($article->getAuthor(), 'article->getAuthor()')->notEmpty()->string();
         Assert::assert($article->getPathImage(), 'article->getPathImage()')->notEmpty()->string();
+
         $connection = (new db\MySqlConnection())->getConnection();
         $stmt = $connection->prepare(
             'INSERT INTO articles(ArticleName, Author, Article, Image)
@@ -75,7 +76,7 @@ class ArticleRepository
      */
     public function findByLimit($limit, $offset = 0)
     {
-        Assert::assert($limit, 'limit')->notEmpty()->int();
+        Assert::assert($limit, 'limit')->notEmpty()->positive()->int();
         Assert::assert($offset, 'offset')->int();
         $forConnect = new db\MySqlConnection();
         $connection = $forConnect->getConnection();
@@ -85,6 +86,7 @@ class ArticleRepository
         $stmt->execute();
         $limitArticles = $stmt->fetchAll();
         $resultArray = [];
+
         foreach($limitArticles as $article) {
             $resultArray[] = $this->inflate($article);
         }

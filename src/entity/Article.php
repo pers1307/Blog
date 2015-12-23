@@ -169,4 +169,46 @@ class Article
     {
         return $this->pathImage;
     }
+
+    /**
+     * @param array $array
+     *
+     * @throws \Exception
+     */
+    public function fromArray(array $array)
+    {
+        Assert::assert($array, 'var')->isArray();
+
+        if (isset($array['name'])) {
+            $this->setName($array['name']);
+        } else {
+            throw new \Exception(
+                'Не существует элемента массива с ключом "name"'
+            );
+        }
+
+        if (isset($array['text'])) {
+            $this->setText($array['text']);
+        } else {
+            throw new \Exception(
+                'Не существует элемента массива с ключом "text"'
+            );
+        }
+
+        if (isset($array['author'])) {
+            $this->setAuthor($array['author']);
+        } else {
+            throw new \Exception(
+                'Не существует элемента массива с ключом "author"'
+            );
+        }
+
+        if (isset($array['pathImage'])) {
+            $this->setPathImage($array['pathImage']);
+        } else {
+            throw new \Exception(
+                'Не существует элемента массива с ключом "pathImage"'
+            );
+        }
+    }
 }
