@@ -10,9 +10,11 @@
 
 namespace pers1307\blog\controllers;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use pers1307\blog\repository\ArticleRepository;
+use pers1307\blog\services\Autorization;
 use pers1307\blog\entity\Article;
-use pers1307\blog\autorization\Autorization;
 use KoKoKo\assert\Assert;
 
 class ArticlesDeskController extends AbstractController
@@ -23,6 +25,13 @@ class ArticlesDeskController extends AbstractController
      */
     public function editArticleAction()
     {
+        $request = Request::createFromGlobals();
+        $response = new Response(
+            'Content',
+            Response::HTTP_OK,
+            array('content-type' => 'text/html')
+        );
+
         try {
             if (!Autorization::getInstance()->checkAutorization()) {
                 $params = [
@@ -30,19 +39,20 @@ class ArticlesDeskController extends AbstractController
                     'message' => 'У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь.'
                 ];
 
-                return $this->renderByTwig('layoutFilled.html', $params);
+                $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+                $response->send();
             }
-            if (!isset($_GET['articleId'])) {
+            if ($request->query->has('articleId')) {
                 $params = [
                     'forContent' => 'template/alertAutorization.html',
                     'message' => 'Такой статьи не существует.'
                 ];
 
-                return $this->renderByTwig('layoutFilled.html', $params);
+                $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+                $response->send();
             }
 
-
-            $id = $_GET['articleId'];
+            $id = $request->query->get('articleId');
             $id = Assert::assert($id, 'id')->digit($id)->toInt()->get();
             $modelArticle = new ArticleRepository();
             $article = $modelArticle->findById($id);
@@ -57,18 +67,28 @@ class ArticlesDeskController extends AbstractController
                 'errorAddArticle' => $errorAddArticle,
             ];
             $params['forContent'] = 'editArticle.html';
-            return $this->renderByTwig('layoutFilled.html', $params);
+
+            $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+            $response->send();
         } catch (\Exception $exception) {
             $params = [
                 'forContent' => 'template/alertAutorization.html',
                 'message' => $exception->getMessage()
             ];
-            return $this->renderByTwig('layoutFilled.html', $params);
+
+            $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+            $response->send();
         }
     }
 
     public function findAllAction()
     {
+        $response = new Response(
+            'Content',
+            Response::HTTP_OK,
+            array('content-type' => 'text/html')
+        );
+
         try {
             if (!Autorization::getInstance()->checkAutorization()) {
                 throw new \Exception(
@@ -84,7 +104,8 @@ class ArticlesDeskController extends AbstractController
                 'forContent' => 'articleDesk.html'
             ];
 
-            return $this->renderByTwig('layoutFilled.html', $params);
+            $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+            $response->send();
 
         } catch (\Exception $exception) {
 
@@ -93,9 +114,11 @@ class ArticlesDeskController extends AbstractController
                 'message' => $exception->getMessage()
             ];
 
-            return $this->renderByTwig('layoutFilled.html', $params);
+            $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+            $response->send();
         }
     }
+
     /**
      * @return Array
      *
@@ -103,47 +126,50 @@ class ArticlesDeskController extends AbstractController
      */
     protected function addArticle()
     {
+        $request = Request::createFromGlobals();
+
         $preArticle = [];
 
         try {
-            if (!isset($_POST['newArticleName'])) {
+            if (!$request->request->has('newArticleName')) {
                 throw new \InvalidArgumentException('Аргумент "newArticleName" на задан в POST массиве');
             }
-            $preArticle['name'] = htmlspecialchars($_POST['newArticleName']);
+            $preArticle['name'] = htmlspecialchars($request->request->get('newArticleName'));
 
-            if (!isset($_POST['newArticleText'])) {
+            if (!$request->request->has('newArticleText')) {
                 throw new \InvalidArgumentException('Аргумент "newArticleText" на задан в POST массиве');
             }
-            $preArticle['text'] = htmlspecialchars($_POST['newArticleText']);
+            $preArticle['text'] = htmlspecialchars($request->request->get('newArticleText'));
 
-            if (!isset($_POST['newArticleAuthor'])) {
+            if (!$request->request->has('newArticleAuthor')) {
                 throw new \InvalidArgumentException('Аргумент "newArticleAuthor" на задан в POST массиве');
             }
-            $preArticle['author'] = htmlspecialchars($_POST['newArticleAuthor']);
+            $preArticle['author'] = htmlspecialchars($request->request->get('newArticleAuthor'));
 
-            if (!isset($_FILES['newArticleImage'])) {
-                throw new \InvalidArgumentException('Аргумент "newArticleImage" на задан в POST массиве');
+            $name = null;
+            $tmp = null;
+            foreach($request->files as $uploadedFile) {
+
+                foreach ( $uploadedFile as $item) {
+                    $name = $item->getClientOriginalName();
+                    $item->move('img', $name);
+                }
             }
-            if ($_FILES['newArticleImage']['name']['0'] === '') {
+
+            if ($name === null) {
                 throw new \Exception(
                     'Картинка не выбрана!'
                 );
             }
-            if ($_FILES['newArticleImage']['error']['0'] !== 0) {
-                throw new \Exception(
-                    'Ошибка при загрузке картинки'
-                );
-            }
-            $preArticle['pathImage'] = 'img/' . $_FILES['newArticleImage']['name']['0'];
-
+            $preArticle['pathImage'] = 'img/' . $name;
 
             $article = new Article();
             $article->fromArray($preArticle);
 
             (new ArticleRepository())->insert($article);
-            copy($_FILES['newArticleImage']['tmp_name']['0'], 'img/' . $_FILES['newArticleImage']['name']['0']);
 
         } catch (\Exception $exception) {
+
             return [
                 'TextError' => $exception->getMessage(),
                 'article' => $preArticle
@@ -229,8 +255,10 @@ class ArticlesDeskController extends AbstractController
             $articles = new ArticleRepository();
             $articles->deleteById($id);
         } catch (\Exception $e) {
+
             return 'ArticleNotDelete';
         }
+
         return 'ArticleDelete';
     }
 }

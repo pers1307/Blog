@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : localhost
-Source Server Version : 50621
-Source Host           : 127.0.0.1:3306
+Source Server Version : 50538
+Source Host           : localhost:3306
 Source Database       : blog
 
 Target Server Type    : MYSQL
-Target Server Version : 50621
+Target Server Version : 50538
 File Encoding         : 65001
 
-Date: 2015-12-23 21:36:15
+Date: 2015-12-25 17:17:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -21,17 +21,22 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `articles`;
 CREATE TABLE `articles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `createAt` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `createAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `name` varchar(50) NOT NULL,
   `authorId` int(10) unsigned NOT NULL,
   `content` text NOT NULL,
   `logoId` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`,`authorId`,`createAt`,`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 -- ----------------------------
 -- Records of articles
 -- ----------------------------
+INSERT INTO `articles` VALUES ('1', '0000-00-00 00:00:00', '52', '1', '112', '1');
+INSERT INTO `articles` VALUES ('2', '0000-00-00 00:00:00', '52', '1', '112', '2');
+INSERT INTO `articles` VALUES ('3', '2015-12-25 13:22:29', 'Какая - то статья', '2', 'Тут текст', '3');
+INSERT INTO `articles` VALUES ('4', '2015-12-25 17:01:19', '878575', '2', '22332222224444', '4');
+INSERT INTO `articles` VALUES ('5', '2015-12-25 17:12:31', '878575', '2', '22332222224444', '5');
 
 -- ----------------------------
 -- Table structure for `authors`
@@ -41,11 +46,13 @@ CREATE TABLE `authors` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of authors
 -- ----------------------------
+INSERT INTO `authors` VALUES ('1', '13');
+INSERT INTO `authors` VALUES ('2', 'Перескоков Юрий');
 
 -- ----------------------------
 -- Table structure for `files`
@@ -55,11 +62,16 @@ CREATE TABLE `files` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `path` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of files
 -- ----------------------------
+INSERT INTO `files` VALUES ('1', 'img/microsoft-office-2016.jpg');
+INSERT INTO `files` VALUES ('2', 'img/microsoft-office-2016.jpg');
+INSERT INTO `files` VALUES ('3', 'img/1920on1080.jpg');
+INSERT INTO `files` VALUES ('4', 'img/less1.png');
+INSERT INTO `files` VALUES ('5', 'img/less1.png');
 
 -- ----------------------------
 -- Table structure for `roles`

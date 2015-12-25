@@ -8,19 +8,21 @@
  * @link        https://github.com/pers1307/Blog_v_2.0
  */
 
-namespace pers1307\blog\autorization;
+namespace pers1307\blog\services;
 
 use KoKoKo\assert\Assert;
 use pers1307\blog\repository\UserRepository;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class Autorization
 {
     /** @var Autorization */
     private static $instance;
+    private $session;
 
     private function __construct()
     {
-
+        $this->session = new Session();
     }
 
     private function __clone()
@@ -30,7 +32,7 @@ class Autorization
 
     public function starSession()
     {
-        session_start();
+        $this->session->start();
     }
 
     /**
@@ -71,7 +73,8 @@ class Autorization
     public function setCurrentUserId($userId)
     {
         Assert::assert($userId, 'userId')->notEmpty()->int();
-        $_SESSION['userId'] = $userId;
+
+        $this->session->set('userId', $userId);
     }
 
     /**
@@ -79,16 +82,18 @@ class Autorization
      */
     public function getCurrentUser()
     {
-        if (!isset($_SESSION['userId'])) {
+        if ($this->session->has('userId')) {
             return null;
         }
-        return $_SESSION['userId'];
+
+        return $this->session->get('userId');
     }
 
     public function exitSession()
     {
-        if (isset($_SESSION['userId'])) {
-            unset($_SESSION['userId']);
+        if ($this->session->has('userId')) {
+            //unset($_SESSION['userId']);
+            $this->session->remove('userId');
         }
     }
 
@@ -97,6 +102,6 @@ class Autorization
      */
     public function checkAutorization()
     {
-        return isset($_SESSION['userId']);
+        return $this->session->has('userId');
     }
 }

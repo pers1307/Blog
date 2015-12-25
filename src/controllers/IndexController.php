@@ -10,11 +10,12 @@
 
 namespace pers1307\blog\controllers;
 
-use KoKoKo\assert\Assert;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use pers1307\blog\repository\ArticleRepository;
-use pers1307\blog\autorization\Autorization;
+use pers1307\blog\services\Autorization;
 use pers1307\blog\repository\UserRepository;
-
+use KoKoKo\assert\Assert;
 
 class IndexController extends AbstractController
 {
@@ -49,7 +50,14 @@ class IndexController extends AbstractController
             'forContent' => 'index.html'
         ];
 
-        echo $this->renderByTwig('layoutFilled.html', $params);
+        // Не понятно, как сделать выводить $response вне контроллера
+        $response = new Response(
+            'Content',
+            Response::HTTP_OK,
+            array('content-type' => 'text/html')
+        );
+        $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+        $response->send();
     }
 
     /**
@@ -57,15 +65,18 @@ class IndexController extends AbstractController
      */
     protected function checkUser()
     {
-        if (isset($_GET['Exit'])) {
+        $request = Request::createFromGlobals();
+
+        if ($request->query->has('exit')) {
             Autorization::getInstance()->exitSession();
         }
-        if (isset($_POST['login']) && isset($_POST['password'])) {
-            if ($_POST['login'] === '' || $_POST['password'] === '') {
+        if ($request->request->has('login') && $request->request->has('password')) {
+            if ($request->request->get('login') === '' || $request->request->get('password') === '') {
                 return 1;
             }
-            if (Autorization::getInstance()->signIn($_POST['login'], $_POST['password'])) {
-                $user = (new UserRepository())->findByCreditionals($_POST['login']);
+
+            if (Autorization::getInstance()->signIn($request->request->get('login'), $request->request->get('password'))) {
+                $user = (new UserRepository())->findByCreditionals($request->request->get('login'));
                 Autorization::getInstance()->setCurrentUserId($user->getId());
                 header('Location: /articlesDesk');
                 exit();
@@ -85,13 +96,15 @@ class IndexController extends AbstractController
      */
     protected function pager()
     {
-        if (!isset($_GET['Page'])) {
+        $request = Request::createFromGlobals();
+
+        if ($request->query->has('page')) {
             return 1;
         } else {
-            if ($_GET['Page'] <= 0) {
+            if ($request->query->get('page') <= 0) {
                 return 1;
             } else {
-                return $_GET['Page'];
+                return $request->query->get('page');
             }
         }
     }

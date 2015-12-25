@@ -7,7 +7,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Phroute\Phroute\RouteCollector;
 use Phroute\Phroute\Dispatcher;
 
-autorization\Autorization::getInstance()->starSession();
+services\Autorization::getInstance()->starSession();
 
 $router = new RouteCollector();
 

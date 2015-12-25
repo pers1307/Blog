@@ -1,7 +1,7 @@
 <div id="Header" class="container">
     <div class="row">
         <div class="col-md-12">
-            Блог начинающего PHP - разработчика
+            Блог PHP - разработчика
         </div>
     </div>
 </div>
@@ -29,19 +29,19 @@
                 <ul class="pagination pagination-lg">
 
                     {% if page != 1 %}
-                    <li><a href='?Page={{ page - 1 }}'>&laquo; Назад</a></li>
+                    <li><a href='?page={{ page - 1 }}'>&laquo; Назад</a></li>
                     {% endif %}
 
                     {% for count in 1..countPage %}
                     {% if page == count %}
-                    <li class='active'><a href='?Page={{ count  }}'>{{ count  }}</a></li>
+                    <li class='active'><a href='?page={{ count  }}'>{{ count  }}</a></li>
                     {% else %}
-                    <li><a href='?Page={{ count  }}'>{{ count  }}</a></li>
+                    <li><a href='?page={{ count  }}'>{{ count  }}</a></li>
                     {% endif %}
                     {% endfor %}
 
                     {% if page != countPage %}
-                    <li><a href='?Page={{ page + 1 }}'>Вперед &raquo;</a></li>
+                    <li><a href='?page={{ page + 1 }}'>Вперед &raquo;</a></li>
                     {% endif %}
                 </ul>
             {% endif %}
@@ -60,7 +60,7 @@
             {% else %}
                 <p>Логин : {{ user.getLogin() }}</p>
                 <p><a href="/articlesDesk" class="btn btn-primary">Войти</a></p>
-                <p><a href="?Exit=true" class="btn btn-primary">Выйти</a></p>
+                <p><a href="?exit=true" class="btn btn-primary">Выйти</a></p>
             {% endif %}
 
         </div>

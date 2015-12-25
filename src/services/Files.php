@@ -10,14 +10,22 @@
 
 namespace pers1307\blog\services;
 use pers1307\blog\db\MySqlConnection;
+use KoKoKo\assert\Assert;
 
 class Files
 {
+    /**
+     * @param string $path
+     *
+     * @return int
+     * @throws \InvalidArgumentException
+     */
     public function add($path)
     {
+        Assert::assert($path, '$path')->notEmpty()->string();
+
         $connection = (new MySqlConnection())->getConnection();
 
-        // вернуть id новой вставленной записи
         $stmt = $connection->prepare(
             'INSERT INTO files(`path`)
                 VALUES (:path)'
@@ -31,6 +39,30 @@ class Files
         $stmt->execute();
         $row = $stmt->fetch();
 
-        return $row['id'];
+        return (int)$row['id'];
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return string|null
+     * @throws \InvalidArgumentException
+     */
+    public function getPathById($id)
+    {
+        Assert::assert((int)$id, 'id')->positive()->int();
+
+        $connection = (new MySqlConnection())->getConnection();
+
+        $stmt = $connection->prepare('SELECT path FROM files WHERE id = :id');
+        $stmt->bindParam('id', $id, \PDO::PARAM_INT);
+        $stmt->execute();
+        $found = $stmt->fetch();
+
+        if (is_null($found)) {
+            return null;
+        }
+
+        return $found['path'];
     }
 }

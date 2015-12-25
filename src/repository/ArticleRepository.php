@@ -201,19 +201,31 @@ class ArticleRepository
      */
     private function inflate(array $articleRow)
     {
-        Assert::assert((int)$articleRow['id'], '$articleRow["id"]')->positive()->int();
-        Assert::assert($articleRow['Date'], '$articleRow["Date"]')->notEmpty()->string();
-        Assert::assert($articleRow['ArticleName'], '$articleRow["ArticleName"]')->notEmpty()->string();
-        Assert::assert($articleRow['Author'], '$articleRow["Author"]')->notEmpty()->string();
-        Assert::assert($articleRow['Article'], '$articleRow["Article"]')->notEmpty()->string();
-        Assert::assert($articleRow['Image'], '$articleRow["Image"]')->notEmpty()->string();
+        Assert::assert((int)$articleRow['id'], 'articleRow["id"]')->positive()->int();
+        Assert::assert($articleRow['createAt'], 'articleRow["createAt"]')->notEmpty()->string();
+        Assert::assert($articleRow['name'], 'articleRow["name"]')->notEmpty()->string();
+        Assert::assert((int)$articleRow['authorId'], 'articleRow["authorId"]')->positive()->int();
+        Assert::assert($articleRow['content'], 'articleRow["content"]')->notEmpty()->string();
+        Assert::assert((int)$articleRow['logoId'], 'articleRow["logoId"]')->positive()->int();
+
+        $path = (new Files())->getPathById((int)$articleRow['logoId']);
+
+        $connection = (new MySqlConnection())->getConnection();
+
+        $stmt = $connection->prepare('SELECT `name` FROM authors WHERE id = :id');
+        $authorId = (int)$articleRow['authorId'];
+        $stmt->bindParam('id', $authorId, \PDO::PARAM_INT);
+        $stmt->execute();
+        $found = $stmt->fetch();
+
+        $author = $found['name'];
 
         return (new Article())
             ->setId((int)$articleRow['id'])
-            ->setCreatedAt($articleRow['Date'])
-            ->setName($articleRow['ArticleName'])
-            ->setAuthor($articleRow['Author'])
-            ->setText($articleRow['Article'])
-            ->setPathImage($articleRow['Image']);
+            ->setCreatedAt($articleRow['createAt'])
+            ->setName($articleRow['name'])
+            ->setAuthor($author)
+            ->setText($articleRow['content'])
+            ->setPathImage($path);
     }
 }
