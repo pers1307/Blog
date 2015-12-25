@@ -177,7 +177,7 @@ class Article
      */
     public function fromArray(array $array)
     {
-        Assert::assert($array, 'var')->isArray();
+        Assert::assert($array, 'array')->isArray();
 
         if (isset($array['name'])) {
             $this->setName($array['name']);

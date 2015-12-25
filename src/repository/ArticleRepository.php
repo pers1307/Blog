@@ -9,9 +9,10 @@
  */
 
 namespace pers1307\blog\repository;
-use pers1307\blog\db;
+use pers1307\blog\db\MySqlConnection;
 use KoKoKo\assert\Assert;
 use pers1307\blog\entity\Article;
+use pers1307\blog\services\Files;
 
 class ArticleRepository
 {
@@ -20,7 +21,7 @@ class ArticleRepository
      */
     public function findAll()
     {
-        $connection = (new db\MySqlConnection())->getConnection();
+        $connection = (new MySqlConnection())->getConnection();
         $sql = 'SELECT * FROM articles';
         $sth = $connection->prepare($sql);
         $sth->execute();
@@ -31,6 +32,7 @@ class ArticleRepository
         }
         return $resultArray;
     }
+
     /**
      * @param article $article
      *
@@ -43,18 +45,52 @@ class ArticleRepository
         Assert::assert($article->getAuthor(), 'article->getAuthor()')->notEmpty()->string();
         Assert::assert($article->getPathImage(), 'article->getPathImage()')->notEmpty()->string();
 
-        $connection = (new db\MySqlConnection())->getConnection();
+        $connection = (new MySqlConnection())->getConnection();
+
+        // Добавить автора или вернуть существующего
+        /**
+         * todo: вынести в entity, как отдельную сущность, создать новый набор сущностей под новую БД
+         * todo: на рефакторинг
+         */
+        $stmt = $connection->prepare('SELECT id FROM authors WHERE `name` LIKE :author');
+        $stmt->bindValue(':author', $article->getAuthor(), \PDO::PARAM_STR);
+        $stmt->execute();
+        $author = $stmt->fetch();
+
+        if (!empty($author)) {
+            $authorId = $author['id'];
+        } else {
+            $stmt = $connection->prepare(
+                'INSERT INTO authors(`name`)
+                VALUES (:authorName)'
+            );
+
+            $stmt->execute([
+                'authorName' => $article->getAuthor()
+            ]);
+
+            $stmt = $connection->prepare('SELECT id FROM authors WHERE `name` LIKE :author');
+            $stmt->bindValue(':author', $article->getAuthor(), \PDO::PARAM_STR);
+            $stmt->execute();
+            $author = $stmt->fetch();
+            $authorId = $author['id'];
+        }
+
+        $pathId = (new Files())->add($article->getPathImage());
+
         $stmt = $connection->prepare(
-            'INSERT INTO articles(ArticleName, Author, Article, Image)
-            VALUES (:nameArticle, :auth, :textArticle, :img)'
+            'INSERT INTO articles(`name`, authorId, content, logoId)
+            VALUES (:articleName, :authotId, :content, :logoId)'
         );
+
         $stmt->execute([
-            'nameArticle' => $article->getName(),
-            'auth' => $article->getAuthor(),
-            'textArticle' => $article->getText(),
-            'img' => $article->getPathImage()
+            'articleName' => $article->getName(),
+            'authotId' => $authorId,
+            'content' => $article->getText(),
+            'logoId' => $pathId
         ]);
     }
+
     /**
      * @param int $id
      *
@@ -63,10 +99,11 @@ class ArticleRepository
     public function deleteById($id)
     {
         Assert::assert($id, 'id')->notEmpty()->int();
-        $connection = (new db\MySqlConnection())->getConnection();
+        $connection = (new MySqlConnection())->getConnection();
         $stmt = $connection->prepare('DELETE FROM articles WHERE id = :id');
         $stmt->execute(['id' => $id]);
     }
+
     /**
      * @param int $limit
      * @param int $offset
@@ -78,7 +115,7 @@ class ArticleRepository
     {
         Assert::assert($limit, 'limit')->notEmpty()->positive()->int();
         Assert::assert($offset, 'offset')->int();
-        $forConnect = new db\MySqlConnection();
+        $forConnect = new MySqlConnection();
         $connection = $forConnect->getConnection();
         $stmt = $connection->prepare('SELECT * FROM articles LIMIT :offset, :limit');
         $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
@@ -92,12 +129,13 @@ class ArticleRepository
         }
         return $resultArray;
     }
+
     /**
      * @return int
      */
     public function count()
     {
-        $forConnect = new db\MySqlConnection();
+        $forConnect = new MySqlConnection();
         $connection = $forConnect->getConnection();
         $stmt = $connection->query(
             'SELECT COUNT(*) AS result
@@ -107,6 +145,7 @@ class ArticleRepository
         $result = $result['result'];
         return $result;
     }
+
     /**
      * @param int $id
      *
@@ -116,7 +155,7 @@ class ArticleRepository
     public function findById($id)
     {
         Assert::assert($id, 'id')->notEmpty()->int();
-        $ForConnect = new db\MySqlConnection();
+        $ForConnect = new MySqlConnection();
         $connection = $ForConnect->getConnection();
         $stmt = $connection->prepare('SELECT * FROM articles WHERE id = :id');
         $stmt->bindParam('id', $id, \PDO::PARAM_INT);
@@ -128,12 +167,13 @@ class ArticleRepository
         $resultArticle = $this->inflate($found);
         return $resultArticle;
     }
+
     /**
      * @param article $article
      */
     public function updateById(article $article)
     {
-        $ForConnect = new db\MySqlConnection();
+        $ForConnect = new MySqlConnection();
         $connection = $ForConnect->getConnection();
         $stmt = $connection->prepare(
             'UPDATE articles
@@ -152,6 +192,7 @@ class ArticleRepository
             'img' => $article->getPathImage()
         ]);
     }
+
     /**
      * @param array $articleRow
      *
@@ -166,6 +207,7 @@ class ArticleRepository
         Assert::assert($articleRow['Author'], '$articleRow["Author"]')->notEmpty()->string();
         Assert::assert($articleRow['Article'], '$articleRow["Article"]')->notEmpty()->string();
         Assert::assert($articleRow['Image'], '$articleRow["Image"]')->notEmpty()->string();
+
         return (new Article())
             ->setId((int)$articleRow['id'])
             ->setCreatedAt($articleRow['Date'])

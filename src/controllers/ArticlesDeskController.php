@@ -83,17 +83,22 @@ class ArticlesDeskController extends AbstractController
                 'addResult' => $addResult,
                 'forContent' => 'articleDesk.html'
             ];
+
             return $this->renderByTwig('layoutFilled.html', $params);
+
         } catch (\Exception $exception) {
+
             $params = [
                 'forContent' => 'template/alert.html',
                 'message' => $exception->getMessage()
             ];
+
             return $this->renderByTwig('layoutFilled.html', $params);
         }
     }
     /**
      * @return Array
+     *
      * @throws \InvalidArgumentException|\Exception
      */
     protected function addArticle()
@@ -134,12 +139,9 @@ class ArticlesDeskController extends AbstractController
 
             $article = new Article();
             $article->fromArray($preArticle);
-            copy($_FILES['newArticleImage']['tmp_name']['0'], 'img/' . $_FILES['newArticleImage']['name']['0']);
 
-            // Не переработано
             (new ArticleRepository())->insert($article);
-
-
+            copy($_FILES['newArticleImage']['tmp_name']['0'], 'img/' . $_FILES['newArticleImage']['name']['0']);
 
         } catch (\Exception $exception) {
             return [
