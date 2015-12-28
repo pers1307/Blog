@@ -13,7 +13,6 @@ namespace pers1307\blog\services;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-
 class Log
 {
     /** @var Log */
@@ -24,7 +23,10 @@ class Log
 
     private function __construct()
     {
-        $this->log = new Logger('');
+        $this->log = new Logger('log');
+        $today = date('Y-m-D');
+        $path = 'app/logs/' . $today . '.log';
+        $this->log->pushHandler(new StreamHandler($path, Logger::ERROR));
     }
 
     /**
@@ -37,5 +39,13 @@ class Log
         }
 
         return self::$instance;
+    }
+
+    /**
+     * @param string $message
+     */
+    public function addRecord($message)
+    {
+        $this->log->addError($message);
     }
 }
