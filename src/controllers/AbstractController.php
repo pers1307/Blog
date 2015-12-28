@@ -48,7 +48,10 @@ abstract class AbstractController
 
         \Twig_Autoloader::register();
         $loader = new \Twig_Loader_Filesystem('views');
-        $twig = new \Twig_Environment($loader);
+        $twig = new \Twig_Environment($loader, [
+            'cache' => 'app/cache/twig'
+        ]);
+
         $templ = $twig->LoadTemplate($templateFile);
         return $templ->render($params);
     }

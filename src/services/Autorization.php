@@ -92,7 +92,6 @@ class Autorization
     public function exitSession()
     {
         if ($this->session->has('userId')) {
-            //unset($_SESSION['userId']);
             $this->session->remove('userId');
         }
     }
