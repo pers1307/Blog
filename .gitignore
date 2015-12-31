@@ -12,6 +12,8 @@ composer.phar
 $RECYCLE.BIN/
 vendor/
 .idea/
+app/cache/twig/
+app/cache/logs/
 
 
 

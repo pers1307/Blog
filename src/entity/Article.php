@@ -10,6 +10,7 @@
 
 namespace pers1307\blog\entity;
 
+use pers1307\blog\services\Log;
 use KoKoKo\assert\Assert;
 
 class Article
@@ -206,6 +207,8 @@ class Article
         if (isset($array['pathImage'])) {
             $this->setPathImage($array['pathImage']);
         } else {
+            Log::getInstance()->addError('Article()->fromArray : Не существует элемента массива с ключом "pathImage"');
+
             throw new \Exception(
                 'Не существует элемента массива с ключом "pathImage"'
             );

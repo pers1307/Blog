@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use pers1307\blog\repository\ArticleRepository;
 use pers1307\blog\services\Autorization;
 use pers1307\blog\entity\Article;
+use pers1307\blog\services\Log;
 use KoKoKo\assert\Assert;
 
 class ArticlesDeskController extends AbstractController
@@ -72,7 +73,7 @@ class ArticlesDeskController extends AbstractController
             $response->send();
         } catch (\Exception $exception) {
             $params = [
-                'forContent' => 'template/alertAutorization.html',
+                'forContent' => 'template/alert.html',
                 'message' => $exception->getMessage()
             ];
 
@@ -95,6 +96,9 @@ class ArticlesDeskController extends AbstractController
                     'У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь.'
                 );
             }
+            /**
+             * todo: сделать возврат данных на форму. Либо сделать обработку формы на Ajax, и вынести эту форму на отдельную страницу.
+             */
             $addResult = $this->addArticle();
             $article = new ArticleRepository();
             $articles = $article->findAll();
@@ -120,6 +124,10 @@ class ArticlesDeskController extends AbstractController
     }
 
     /**
+     * Я этот метод переделал, но мне не понятно, как сделать прослойку между исключениями для программиста и исключениями для пользователя?
+     * Можно, конечно, написать что-то в стиле "Что-то пошло не так", но это может быть по вине пользователя, ибо поля не должны быть пустыми.
+     * Мне только приходит в голову, сделать конфиг, с сопоставлением исключений системных с пользовательскими.
+     *
      * @return Array
      *
      * @throws \InvalidArgumentException|\Exception
