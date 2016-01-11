@@ -1,2 +1,0 @@
-[2015-12-31 08:57:39] log.ERROR: Article()->fromArray : Не существует элемента массива с ключом "pathImage" [] []
-[2015-12-31 08:57:59] log.ERROR: Article()->fromArray : Не существует элемента массива с ключом "pathImage" [] []
