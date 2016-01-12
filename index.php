@@ -16,6 +16,8 @@ $router->any('/articlesDesk', ['pers1307\blog\controllers\ArticlesDeskController
 $router->any('/deleteArticle/{id}',['pers1307\blog\controllers\ArticlesDeskController','deleteArticle']);
 $router->any('/EditArticle',['pers1307\blog\controllers\ArticlesDeskController','editArticleAction']);
 
+$router->any('/article',['pers1307\blog\controllers\ArticleController','articleAction']);
+
 $dispatcher = new Dispatcher($router->getData());
 $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 echo $response;

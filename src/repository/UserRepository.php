@@ -28,6 +28,7 @@ class UserRepository
         $allUsers = $sth->fetchAll();
 
         $resultArray = [];
+
         foreach ($allUsers as $row) {
             $resultArray[] = $this->setUserFromRowQuery($row);
         }
@@ -57,6 +58,7 @@ class UserRepository
         $stmt->execute(['login' => $login]);
 
         $row = $stmt->fetch();
+
         if ($row !== null) {
             $resultUser = $this->setUserFromRowQuery($row);
         } else {

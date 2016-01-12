@@ -1,0 +1,44 @@
+<div id="ContentControlPanel" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="New-post">
+                <h3>Добавить новую статью в блог!</h3>
+                <form role="form" method="post" action="" enctype="multipart/form-data">
+                    {% if errorAddArticle['CodeError'] != 0 %}
+                    <div class="form-group alert-danger col-md-12">
+                        <h4>{{ errorAddArticle['TextError'] }}</h4>
+                    </div>
+                    {% endif %}
+
+                    <div class="form-group col-md-8 {{ (errorAddArticle['CodeError'] == '1') ? 'has-error' }}">
+                        <label for="exampleInputEmail1">Название статьи</label>
+                        <input type="text" class="form-control" placeholder="Название статьи" name="newArticleName" value="{{ (errorAddArticle['CodeError'] != '0') ? errorAddArticle['Article'].getName() }}">
+                    </div>
+                    <div class="form-group col-md-4 {{ (errorAddArticle['CodeError'] == '2') ? 'has-error' }}">
+                        <label for="exampleInputPassword1">Автор статьи</label>
+                        <input type="text" class="form-control" placeholder="Автор статьи" value="{{ (errorAddArticle['CodeError'] != '0') ? errorAddArticle['Article'].getAuthor() : 'Перескоков Юрий' }}" name="newArticleAuthor">
+                    </div>
+
+                    <div class="form-group col-md-12" {{ (errorAddArticle['CodeError'] == '3') ? "style='outline: 1px solid #A90006'" }} >
+
+                    {% if errorAddArticle['CodeError'] != 0 %}
+                    <label for="exampleInputFile">Текущая картинка: {{ errorAddArticle['Article'].getPathImage() }} </label>
+                    <p><label for="exampleInputFile">Добавьте её снова!</label></p>
+                    {% endif %}
+
+                    <label for="exampleInputFile">Хочу добавить картинку!</label>
+                    <input type="file" name="newArticleImage[]" multiple="multiple">
+                </div>
+
+                <div class="form-group col-md-12 {{ (errorAddArticle['CodeError'] == '4') ? 'has-error' }}">
+                    <label for="exampleInputFile">Текст статьи: </label>
+                    <textarea id="newArticle" class="form-control" rows="6" name="newArticleText" style="resize: none">{{ (errorAddArticle['CodeError'] != '0') ? errorAddArticle['Article'].getText() }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <button id="ForSub" type="submit" class="btn btn-primary" name="sub"><i class="fa fa-check"></i>Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

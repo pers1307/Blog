@@ -18,6 +18,8 @@ class Autorization
 {
     /** @var Autorization */
     private static $instance;
+
+    /** @var Session */
     private $session;
 
     private function __construct()

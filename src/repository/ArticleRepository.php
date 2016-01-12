@@ -9,6 +9,7 @@
  */
 
 namespace pers1307\blog\repository;
+
 use pers1307\blog\db\MySqlConnection;
 use KoKoKo\assert\Assert;
 use pers1307\blog\entity\Article;
@@ -27,9 +28,11 @@ class ArticleRepository
         $sth->execute();
         $allArticles = $sth->fetchAll();
         $resultArray = [];
+
         foreach ($allArticles as $row) {
             $resultArray[] = $this->inflate($row);
         }
+
         return $resultArray;
     }
 
@@ -127,6 +130,7 @@ class ArticleRepository
         foreach($limitArticles as $article) {
             $resultArray[] = $this->inflate($article);
         }
+
         return $resultArray;
     }
 
@@ -143,6 +147,7 @@ class ArticleRepository
         );
         $result = $stmt->fetch();
         $result = $result['result'];
+
         return $result;
     }
 
@@ -161,10 +166,12 @@ class ArticleRepository
         $stmt->bindParam('id', $id, \PDO::PARAM_INT);
         $stmt->execute();
         $found = $stmt->fetch();
+
         if (is_null($found)) {
             return null;
         }
         $resultArticle = $this->inflate($found);
+
         return $resultArticle;
     }
 

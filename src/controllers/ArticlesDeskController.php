@@ -30,10 +30,11 @@ class ArticlesDeskController extends AbstractController
         $response = new Response(
             'Content',
             Response::HTTP_OK,
-            array('content-type' => 'text/html')
+            ['content-type' => 'text/html']
         );
 
         try {
+
             if (!Autorization::getInstance()->checkAutorization()) {
                 $params = [
                     'forContent' => 'template/alertAutorization.html',
@@ -43,6 +44,7 @@ class ArticlesDeskController extends AbstractController
                 $response->setContent($this->renderByTwig('layoutFilled.html', $params));
                 $response->send();
             }
+
             if ($request->query->has('articleId')) {
                 $params = [
                     'forContent' => 'template/alertAutorization.html',
@@ -57,11 +59,13 @@ class ArticlesDeskController extends AbstractController
             $id = Assert::assert($id, 'id')->digit($id)->toInt()->get();
             $modelArticle = new ArticleRepository();
             $article = $modelArticle->findById($id);
+
             if ($article === null) {
                 throw new \Exception(
                     'Такой статьи не существует.'
                 );
             }
+
             $errorAddArticle = $this->editArticle($article);
             $params = [
                 'article' => $article,
@@ -87,7 +91,7 @@ class ArticlesDeskController extends AbstractController
         $response = new Response(
             'Content',
             Response::HTTP_OK,
-            array('content-type' => 'text/html')
+            ['content-type' => 'text/html']
         );
 
         try {
@@ -112,7 +116,6 @@ class ArticlesDeskController extends AbstractController
             $response->send();
 
         } catch (\Exception $exception) {
-
             $params = [
                 'forContent' => 'template/alert.html',
                 'message' => $exception->getMessage()
@@ -156,8 +159,8 @@ class ArticlesDeskController extends AbstractController
 
             $name = null;
             $tmp = null;
-            foreach($request->files as $uploadedFile) {
 
+            foreach ($request->files as $uploadedFile) {
                 foreach ( $uploadedFile as $item) {
                     $name = $item->getClientOriginalName();
                     $item->move('img', $name);
@@ -177,7 +180,6 @@ class ArticlesDeskController extends AbstractController
             (new ArticleRepository())->insert($article);
 
         } catch (\Exception $exception) {
-
             return [
                 'TextError' => $exception->getMessage(),
                 'article' => $preArticle
@@ -193,13 +195,16 @@ class ArticlesDeskController extends AbstractController
     {
         // Здесь та же проблема!
         if (isset($_POST['NewArticleName']) && isset($_POST['NewArticleText']) && isset($_POST['NewArticleAuthor'])) {
+
             if ($_POST['NewArticleName'] === '') {
                 return $this->setErrors('1', 'Название статьи не может быть пустым!');
             }
+
             if ($_POST['NewArticleAuthor'] === '') {
                 return $this->setErrors('2', 'Статья не может быть без автора!');
             }
             $pathImage = '';
+
             if (isset($_FILES['NewArticleImage'])) {
                 if ($_FILES['NewArticleImage']['name']['0'] === '') {
                     $pathImage = $article->getPathImage();
@@ -211,10 +216,12 @@ class ArticlesDeskController extends AbstractController
                     $pathImage = $article->getPathImage();
                 }
             }
+
             if ($_POST['NewArticleText'] === '') {
                 return $this->setErrors('4', 'Текст статьи не может быть пустым!');
             }
             $articles = new ArticleRepository();
+
             if ($pathImage === '') {
                 copy($_FILES['NewArticleImage']['tmp_name']['0'], 'img/' . $_FILES['NewArticleImage']['name']['0']);
                 $pathImage = 'img/'.$_FILES['NewArticleImage']['name']['0'];
@@ -225,9 +232,11 @@ class ArticlesDeskController extends AbstractController
                 ->setPathImage($pathImage);
             $articles->updateById($article);
             unset($_POST['NewArticleName'], $_POST['NewArticleText'], $_POST['NewArticleAuthor'], $_POST['NewArticleImage']);
+
             return $this->setErrors('0', '');
         } else {
             unset($_POST['NewArticleName'], $_POST['NewArticleText'], $_POST['NewArticleAuthor'], $_POST['NewArticleImage']);
+
             return $this->setErrors('0', '');
         }
     }
@@ -247,6 +256,7 @@ class ArticlesDeskController extends AbstractController
         $errors['TextError'] = $text;
         $errors['CodeError'] = $code;
         $errors['Article'] = $article;
+
         return $errors;
     }
 
@@ -263,7 +273,6 @@ class ArticlesDeskController extends AbstractController
             $articles = new ArticleRepository();
             $articles->deleteById($id);
         } catch (\Exception $e) {
-
             return 'ArticleNotDelete';
         }
 

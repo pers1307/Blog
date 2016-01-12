@@ -9,6 +9,7 @@
  */
 
 namespace pers1307\blog\services;
+
 use pers1307\blog\db\MySqlConnection;
 use KoKoKo\assert\Assert;
 

@@ -18,7 +18,7 @@ abstract class AbstractController
      * @param array $params
      *
      * @return string
-     * @throw \InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     protected function render($templateFile, $params)
     {
@@ -39,7 +39,7 @@ abstract class AbstractController
      * @param array $params
      *
      * @return string
-     * @throw \InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     protected function renderByTwig($templateFile, $params)
     {
@@ -48,9 +48,12 @@ abstract class AbstractController
 
         \Twig_Autoloader::register();
         $loader = new \Twig_Loader_Filesystem('views');
-        $twig = new \Twig_Environment($loader, [
-            'cache' => 'app/cache/twig'
-        ]);
+        $twig = new \Twig_Environment(
+            $loader,
+            [
+                //'cache' => 'app/cache/twig'
+            ]
+        );
 
         $templ = $twig->LoadTemplate($templateFile);
         return $templ->render($params);

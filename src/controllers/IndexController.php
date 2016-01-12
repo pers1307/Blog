@@ -54,7 +54,7 @@ class IndexController extends AbstractController
         $response = new Response(
             'Content',
             Response::HTTP_OK,
-            array('content-type' => 'text/html')
+            ['content-type' => 'text/html']
         );
         $response->setContent($this->renderByTwig('layoutFilled.html', $params));
         $response->send();
@@ -129,7 +129,7 @@ class IndexController extends AbstractController
         $article = new ArticleRepository();
         $countArticles = $article->count();
 
-        if ( $currentPage > floor($countArticles / $postOnPage)) {
+        if ($currentPage > floor($countArticles / $postOnPage)) {
             $currentPage = ceil($countArticles / $postOnPage);
         }
         $offset = ($currentPage - 1) * $postOnPage;
