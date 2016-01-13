@@ -13,7 +13,7 @@ namespace pers1307\blog\repository;
 use pers1307\blog\db\MySqlConnection;
 use KoKoKo\assert\Assert;
 use pers1307\blog\entity\Article;
-use pers1307\blog\services\Files;
+use pers1307\blog\service\Files;
 
 class ArticleRepository
 {

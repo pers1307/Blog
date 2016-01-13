@@ -1,23 +1,22 @@
 #HeaderControlPanel {
     margin-top: 60px;
 }
-#HeaderControlPanel div div{
+#HeaderControlPanel div div {
     color: #62A2F3;
     font: 300% tahoma;
     letter-spacing: 5px;
 }
 #ContentControlPanel {
     margin-top: 5px;
-    min-height: 300px;
+    min-height: 600px;
 }
-#NewArticle
-{
+#NewArticle {
     resize:none;
 }
 #ForSub {
     margin-left: 20px;
 }
-#ContentControlPanel h3{
+#ContentControlPanel h3 {
     color: #62A2F3;
     font: 180% tahoma;
 }
@@ -37,4 +36,7 @@
 }
 .Image {
     margin: auto;
+}
+.addArticle {
+    font-size: 16px;
 }

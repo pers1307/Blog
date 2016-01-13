@@ -8,7 +8,7 @@
  * @link        https://github.com/pers1307/Blog_v_2.0
  */
 
-namespace pers1307\blog\services;
+namespace pers1307\blog\service;
 
 use KoKoKo\assert\Assert;
 use pers1307\blog\repository\UserRepository;

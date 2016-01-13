@@ -1,8 +1,15 @@
+<div id="HeaderControlPanel" class="container">
+    <div class="row">
+        <div class="col-md-12">
+        </div>
+    </div>
+</div>
+
 <div id="ContentControlPanel" class="container">
     <div class="row">
         <div class="col-md-12">
             <div id="New-post">
-                <h3>Добавить новую статью в блог!</h3>
+                <h3>Работа со статьей</h3>
                 <form role="form" method="post" action="" enctype="multipart/form-data">
                     {% if errorAddArticle['CodeError'] != 0 %}
                     <div class="form-group alert-danger col-md-12">
@@ -11,12 +18,12 @@
                     {% endif %}
 
                     <div class="form-group col-md-8 {{ (errorAddArticle['CodeError'] == '1') ? 'has-error' }}">
-                        <label for="exampleInputEmail1">Название статьи</label>
-                        <input type="text" class="form-control" placeholder="Название статьи" name="newArticleName" value="{{ (errorAddArticle['CodeError'] != '0') ? errorAddArticle['Article'].getName() }}">
+                        <label>Название статьи</label>
+                        <input type="text" class="form-control" placeholder="Название статьи" name="name">
                     </div>
                     <div class="form-group col-md-4 {{ (errorAddArticle['CodeError'] == '2') ? 'has-error' }}">
-                        <label for="exampleInputPassword1">Автор статьи</label>
-                        <input type="text" class="form-control" placeholder="Автор статьи" value="{{ (errorAddArticle['CodeError'] != '0') ? errorAddArticle['Article'].getAuthor() : 'Перескоков Юрий' }}" name="newArticleAuthor">
+                        <label>Автор статьи</label>
+                        <input type="text" class="form-control" placeholder="Автор статьи" name="author">
                     </div>
 
                     <div class="form-group col-md-12" {{ (errorAddArticle['CodeError'] == '3') ? "style='outline: 1px solid #A90006'" }} >
@@ -31,8 +38,8 @@
                 </div>
 
                 <div class="form-group col-md-12 {{ (errorAddArticle['CodeError'] == '4') ? 'has-error' }}">
-                    <label for="exampleInputFile">Текст статьи: </label>
-                    <textarea id="newArticle" class="form-control" rows="6" name="newArticleText" style="resize: none">{{ (errorAddArticle['CodeError'] != '0') ? errorAddArticle['Article'].getText() }}</textarea>
+                    <label>Текст статьи: </label>
+                    <textarea id="newArticle" class="form-control" rows="6" name="newArticleText" style="resize: none"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -41,4 +48,5 @@
             </form>
         </div>
     </div>
+</div>
 </div>

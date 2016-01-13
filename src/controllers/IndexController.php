@@ -13,7 +13,7 @@ namespace pers1307\blog\controllers;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use pers1307\blog\repository\ArticleRepository;
-use pers1307\blog\services\Autorization;
+use pers1307\blog\service\Autorization;
 use pers1307\blog\repository\UserRepository;
 use KoKoKo\assert\Assert;
 
