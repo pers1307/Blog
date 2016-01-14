@@ -26,8 +26,14 @@ class ArticleController extends AbstractController
     /**
      * @param int $id
      */
-    public function articleAction($id)
+    public function findAction($id)
     {
+        // проверка на int обязательна
+
+        /**
+         * todo: Этот action отображает существующие статьи и выводит заполненную форму, если такая сттья существует
+         */
+
         try {
 
 
@@ -48,6 +54,72 @@ class ArticleController extends AbstractController
 
         }
     }
+
+    /**
+     * Я этот метод переделал, но мне не понятно, как сделать прослойку между исключениями для программиста и исключениями для пользователя?
+     * Можно, конечно, написать что-то в стиле "Что-то пошло не так", но это может быть по вине пользователя, ибо поля не должны быть пустыми.
+     * Мне только приходит в голову, сделать конфиг, с сопоставлением исключений системных с пользовательскими.
+     *
+     * @return Array
+     *
+     * @throws \InvalidArgumentException|\Exception
+     */
+    protected function addArticle()
+    {
+        /**
+         * todo: этот метод будет принимать от ajax статью и добавлять, либо обновлять её в базе
+         */
+
+        $request = Request::createFromGlobals();
+
+        $preArticle = [];
+
+        try {
+            if (!$request->request->has('newArticleName')) {
+                throw new \InvalidArgumentException('Аргумент "newArticleName" на задан в POST массиве');
+            }
+            $preArticle['name'] = htmlspecialchars($request->request->get('newArticleName'));
+
+            if (!$request->request->has('newArticleText')) {
+                throw new \InvalidArgumentException('Аргумент "newArticleText" на задан в POST массиве');
+            }
+            $preArticle['text'] = htmlspecialchars($request->request->get('newArticleText'));
+
+            if (!$request->request->has('newArticleAuthor')) {
+                throw new \InvalidArgumentException('Аргумент "newArticleAuthor" на задан в POST массиве');
+            }
+            $preArticle['author'] = htmlspecialchars($request->request->get('newArticleAuthor'));
+
+            $name = null;
+            $tmp = null;
+
+            foreach ($request->files as $uploadedFile) {
+                foreach ( $uploadedFile as $item) {
+                    $name = $item->getClientOriginalName();
+                    $item->move('img', $name);
+                }
+            }
+
+            if ($name === null) {
+                throw new \Exception(
+                    'Картинка не выбрана!'
+                );
+            }
+            $preArticle['pathImage'] = 'img/' . $name;
+
+            $article = new Article();
+            $article->fromArray($preArticle);
+
+            (new ArticleRepository())->insert($article);
+
+        } catch (\Exception $exception) {
+            return [
+                'TextError' => $exception->getMessage(),
+                'article' => $preArticle
+            ];
+        }
+    }
+
 
     /**
      * @return array
@@ -112,68 +184,6 @@ class ArticleController extends AbstractController
 
             $response->setContent($this->renderByTwig('layoutFilled.html', $params));
             $response->send();
-        }
-    }
-
-
-    /**
-     * Я этот метод переделал, но мне не понятно, как сделать прослойку между исключениями для программиста и исключениями для пользователя?
-     * Можно, конечно, написать что-то в стиле "Что-то пошло не так", но это может быть по вине пользователя, ибо поля не должны быть пустыми.
-     * Мне только приходит в голову, сделать конфиг, с сопоставлением исключений системных с пользовательскими.
-     *
-     * @return Array
-     *
-     * @throws \InvalidArgumentException|\Exception
-     */
-    protected function addArticle()
-    {
-        $request = Request::createFromGlobals();
-
-        $preArticle = [];
-
-        try {
-            if (!$request->request->has('newArticleName')) {
-                throw new \InvalidArgumentException('Аргумент "newArticleName" на задан в POST массиве');
-            }
-            $preArticle['name'] = htmlspecialchars($request->request->get('newArticleName'));
-
-            if (!$request->request->has('newArticleText')) {
-                throw new \InvalidArgumentException('Аргумент "newArticleText" на задан в POST массиве');
-            }
-            $preArticle['text'] = htmlspecialchars($request->request->get('newArticleText'));
-
-            if (!$request->request->has('newArticleAuthor')) {
-                throw new \InvalidArgumentException('Аргумент "newArticleAuthor" на задан в POST массиве');
-            }
-            $preArticle['author'] = htmlspecialchars($request->request->get('newArticleAuthor'));
-
-            $name = null;
-            $tmp = null;
-
-            foreach ($request->files as $uploadedFile) {
-                foreach ( $uploadedFile as $item) {
-                    $name = $item->getClientOriginalName();
-                    $item->move('img', $name);
-                }
-            }
-
-            if ($name === null) {
-                throw new \Exception(
-                    'Картинка не выбрана!'
-                );
-            }
-            $preArticle['pathImage'] = 'img/' . $name;
-
-            $article = new Article();
-            $article->fromArray($preArticle);
-
-            (new ArticleRepository())->insert($article);
-
-        } catch (\Exception $exception) {
-            return [
-                'TextError' => $exception->getMessage(),
-                'article' => $preArticle
-            ];
         }
     }
 
