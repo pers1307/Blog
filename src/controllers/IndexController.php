@@ -10,19 +10,25 @@
 
 namespace pers1307\blog\controllers;
 
+use pers1307\blog\exception\InvalidAutorizationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use pers1307\blog\repository\ArticleRepository;
-use pers1307\blog\service\Autorization;
 use pers1307\blog\repository\UserRepository;
+use pers1307\blog\service\Autorization;
 use KoKoKo\assert\Assert;
 
 class IndexController extends AbstractController
 {
     public function indexAction()
     {
-        $error = 0;
-        $error = $this->checkUser();
+        try {
+            if ($this->checkUser()) {
+                $userId = Autorization::getInstance()->getCurrentUser();
+            }
+        } catch (InvalidAutorizationException $exception) {
+
+        }
 
         if ($error === 2) {
             $params['user'] = Autorization::getInstance()->getCurrentUser();
@@ -50,18 +56,20 @@ class IndexController extends AbstractController
             'forContent' => 'index.html'
         ];
 
-        // Не понятно, как сделать выводить $response вне контроллера
         $response = new Response(
             'Content',
             Response::HTTP_OK,
             ['content-type' => 'text/html']
         );
         $response->setContent($this->renderByTwig('layoutFilled.html', $params));
-        $response->send();
+
+        return $response;
     }
 
     /**
      * @return int
+     *
+     * @throws InvalidAutorizationException
      */
     protected function checkUser()
     {
@@ -70,9 +78,10 @@ class IndexController extends AbstractController
         if ($request->query->has('exit')) {
             Autorization::getInstance()->exitSession();
         }
+
         if ($request->request->has('login') && $request->request->has('password')) {
             if ($request->request->get('login') === '' || $request->request->get('password') === '') {
-                return 1;
+                throw new InvalidAutorizationException('Поля пусты');
             }
 
             if (Autorization::getInstance()->signIn($request->request->get('login'), $request->request->get('password'))) {
@@ -81,14 +90,11 @@ class IndexController extends AbstractController
                 header('Location: /articlesDesk');
                 exit();
             } else {
-                return 1;
+                throw new InvalidAutorizationException('Такой пользователь не зарегистрирован');
             }
         }
-        if (Autorization::getInstance()->checkAutorization() === false) {
-            return 0;
-        } else {
-            return 2;
-        }
+
+        return Autorization::getInstance()->checkAutorization();
     }
 
     /**

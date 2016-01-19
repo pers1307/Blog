@@ -10,7 +10,7 @@
 
 namespace pers1307\blog\entity;
 
-use pers1307\blog\services\Log;
+use pers1307\blog\service\Log;
 use KoKoKo\assert\Assert;
 
 class Article

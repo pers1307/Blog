@@ -36,7 +36,6 @@ class ArticleController extends AbstractController
 
         try {
 
-
             $response = new Response(
                 'Content',
                 Response::HTTP_OK,

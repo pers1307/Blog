@@ -51,7 +51,7 @@ class Files
      */
     public function getPathById($id)
     {
-        Assert::assert((int)$id, 'id')->positive()->int();
+        Assert::assert($id, 'id')->positive()->int();
 
         $connection = (new MySqlConnection())->getConnection();
 

@@ -15,9 +15,13 @@ $router = new RouteCollector();
 
 $router->any('/', ['pers1307\blog\controllers\IndexController', 'indexAction']);
 $router->any('/articlesDesk', ['pers1307\blog\controllers\ArticlesDeskController', 'findAllAction']);
-$router->any('/deleteArticle/{id}',['pers1307\blog\controllers\ArticlesDeskController','deleteArticle']);
-$router->any('/article/{id}',['pers1307\blog\controllers\ArticleController','findAction']);
+$router->any('/deleteArticle/{id}', ['pers1307\blog\controllers\ArticlesDeskController','deleteArticle']);
+$router->any('/article/{id}', ['pers1307\blog\controllers\ArticleController','findAction']);
 
 $dispatcher = new Dispatcher($router->getData());
 $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-echo $response;
+
+if (!empty($response)) {
+    $response->send();
+    echo $response;
+}
