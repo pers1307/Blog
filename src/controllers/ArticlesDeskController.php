@@ -40,7 +40,10 @@ class ArticlesDeskController extends AbstractController
                 ['content-type' => 'text/html']
             );
             $response->setContent($this->renderByTwig('layoutFilled.html', $params));
-            $response->send();
+
+            return $response;
+
+            //$response->send();
 
         } catch (\Exception $exception) {
             $params = [
@@ -58,7 +61,9 @@ class ArticlesDeskController extends AbstractController
                 ['content-type' => 'text/html']
             );
             $response->setContent($this->renderByTwig('layoutFilled.html', $params));
-            $response->send();
+
+            return $response;
+            //$response->send();
         }
     }
 

@@ -23,5 +23,4 @@ $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER
 
 if (!empty($response)) {
     $response->send();
-    echo $response;
 }

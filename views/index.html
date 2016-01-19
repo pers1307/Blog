@@ -34,7 +34,7 @@
 
                     {% for count in 1..countPage %}
                     {% if page == count %}
-                    <li class='active'><a href='?page={{ count  }}'>{{ count  }}</a></li>
+                    <li class='active'><a href='?page={{ count  }}'>{{ count }}</a></li>
                     {% else %}
                     <li><a href='?page={{ count  }}'>{{ count  }}</a></li>
                     {% endif %}
@@ -49,16 +49,16 @@
 
         <div class="col-md-2 col-md-offset-1">
             <p id="MyPhoto"><img src="img/photo.jpg" width="100" height="150" alt="Хозяин блога"></p>
-            {% if error == 1 %}
+            {% if error != '' %}
                 <div class="alert-danger">
-                    <p>Логин или пароль введен не верно!</p>
+                    <p>{{error}}</p>
                 </div>
             {% endif %}
 
-            {% if error != 2 %}
+            {% if login == '' %}
                 {%include 'template/autorizationForm.html' %}
             {% else %}
-                <p>Логин : {{ user.getLogin() }}</p>
+                <p>Логин : {{ login }}</p>
                 <p><a href="/articlesDesk" class="btn btn-primary">Войти</a></p>
                 <p><a href="?exit=true" class="btn btn-primary">Выйти</a></p>
             {% endif %}

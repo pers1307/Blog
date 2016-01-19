@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use pers1307\blog\repository\ArticleRepository;
 use pers1307\blog\repository\UserRepository;
 use pers1307\blog\service\Autorization;
+use pers1307\blog\service\Log;
 use KoKoKo\assert\Assert;
 
 class IndexController extends AbstractController
@@ -24,18 +25,11 @@ class IndexController extends AbstractController
     {
         try {
             if ($this->checkUser()) {
-                $userId = Autorization::getInstance()->getCurrentUser();
+                $userId = (int)Autorization::getInstance()->getCurrentUser();
             }
         } catch (InvalidAutorizationException $exception) {
-
-        }
-
-        if ($error === 2) {
-            $params['user'] = Autorization::getInstance()->getCurrentUser();
-
-            if ($params['user'] === null) {
-                $params['user'] = '0';
-            }
+            Log::getInstance()->addError('IndexController()->indexAction : ' . $exception->getMessage());
+            $errorMessage = $exception->getMessage();
         }
 
         $currentPage = (int)$this->pager();
@@ -49,12 +43,19 @@ class IndexController extends AbstractController
 
         $params = [
             'articles' => $articles,
-            'error' => $error,
             'page' => $currentPage,
             'countPage' => $rez['countPage'],
-            //'user' => $user,
             'forContent' => 'index.html'
         ];
+
+        if (!empty($errorMessage)) {
+            $params['error'] = $errorMessage;
+        }
+
+        if (!empty($userId)) {
+            $login = (new UserRepository())->findLoginById($userId);
+            $params['login'] = $login;
+        }
 
         $response = new Response(
             'Content',
