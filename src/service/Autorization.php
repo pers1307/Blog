@@ -20,11 +20,11 @@ class Autorization
     private static $instance;
 
     /** @var Session */
-    private $session;
+    private static $session;
 
     private function __construct()
     {
-        $this->session = new Session();
+
     }
 
     private function __clone()
@@ -34,7 +34,7 @@ class Autorization
 
     public function starSession()
     {
-        $this->session->start();
+        self::$session->start();
     }
 
     /**
@@ -44,9 +44,17 @@ class Autorization
     {
         if (is_null(self::$instance)) {
             self::$instance = new self();
+            self::newSession();
         }
 
         return self::$instance;
+    }
+
+    private static function newSession()
+    {
+        if (is_null(self::$session)) {
+            self::$session = new Session();
+        }
     }
 
     /**
@@ -76,26 +84,20 @@ class Autorization
     {
         Assert::assert($userId, 'userId')->notEmpty()->int();
 
-        $this->session->set('userId', $userId);
+        self::$session->set('userId', $userId);
     }
 
     /**
      * @return UserRepository|null
      */
-    public function getCurrentUser()
+    public function getCurrentUserId()
     {
-        if ($this->session->has('userId')) {
-            return null;
-        }
-
-        return $this->session->get('userId');
+        return self::$session->get('userId');
     }
 
     public function exitSession()
     {
-        if ($this->session->has('userId')) {
-            $this->session->remove('userId');
-        }
+        self::$session->remove('userId');
     }
 
     /**
@@ -103,6 +105,10 @@ class Autorization
      */
     public function checkAutorization()
     {
-        return $this->session->has('userId');
+        if (self::$session->get('userId') === null) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -10,6 +10,7 @@
 
 namespace pers1307\blog\controllers;
 
+use pers1307\blog\exception\InvalidAutorizationException;
 use Symfony\Component\HttpFoundation\Response;
 use pers1307\blog\repository\ArticleRepository;
 use pers1307\blog\service\Autorization;
@@ -22,7 +23,7 @@ class ArticlesDeskController extends AbstractController
     {
         try {
             if (!Autorization::getInstance()->checkAutorization()) {
-                throw new \Exception(
+                throw new InvalidAutorizationException(
                     'У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь.'
                 );
             }
@@ -42,17 +43,14 @@ class ArticlesDeskController extends AbstractController
             $response->setContent($this->renderByTwig('layoutFilled.html', $params));
 
             return $response;
-
-            //$response->send();
-
-        } catch (\Exception $exception) {
+        } catch (InvalidAutorizationException $exception) {
             $params = [
                 'forContent' => 'template/alert.html',
                 'message' => $exception->getMessage()
             ];
 
             Log::getInstance()->addError(
-                'Исключение в ArticlesDeskController/findAllAction: ' . $exception->getMessage()
+                'Исключение в ArticlesDeskController->findAllAction : ' . $exception->getMessage()
             );
 
             $response = new Response(
@@ -63,7 +61,6 @@ class ArticlesDeskController extends AbstractController
             $response->setContent($this->renderByTwig('layoutFilled.html', $params));
 
             return $response;
-            //$response->send();
         }
     }
 
@@ -81,7 +78,7 @@ class ArticlesDeskController extends AbstractController
             $articles->deleteById($id);
         } catch (\Exception $exception) {
             Log::getInstance()->addError(
-                'Исключение в ArticlesDeskController/deleteArticle: ' . $exception->getMessage()
+                'Исключение в ArticlesDeskController->deleteArticle : ' . $exception->getMessage()
             );
 
             return 'ArticleNotDelete';

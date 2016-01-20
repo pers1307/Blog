@@ -55,11 +55,12 @@ class UserRepository
             WHERE users.login = :login
         ');
 
-        $stmt->execute(['login' => $login]);
+        $stmt->bindValue(':login', $login, \PDO::PARAM_STR);
+        $stmt->execute();
 
         $row = $stmt->fetch();
 
-        if ($row !== null) {
+        if ($row !== false) {
             $resultUser = $this->setUserFromRowQuery($row);
         } else {
             $resultUser = null;
@@ -84,7 +85,7 @@ class UserRepository
         $row = $stmt->fetch();
 
         if ($row !== null) {
-            $login = $row['Login'];
+            $login = $row['login'];
         } else {
             $login = null;
         }

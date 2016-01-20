@@ -19,13 +19,15 @@ use pers1307\blog\service\Autorization;
 use pers1307\blog\service\Log;
 use KoKoKo\assert\Assert;
 
+define("POST_ON_PAGE", 3);
+
 class IndexController extends AbstractController
 {
     public function indexAction()
     {
         try {
             if ($this->checkUser()) {
-                $userId = (int)Autorization::getInstance()->getCurrentUser();
+                $userId = Autorization::getInstance()->getCurrentUserId();
             }
         } catch (InvalidAutorizationException $exception) {
             Log::getInstance()->addError('IndexController()->indexAction : ' . $exception->getMessage());
@@ -33,7 +35,7 @@ class IndexController extends AbstractController
         }
 
         $currentPage = (int)$this->pager();
-        $postOnPage = 3;
+        $postOnPage = POST_ON_PAGE;
         $rez = $this->getArticles($currentPage, (int)$postOnPage);
         $articles = $rez['cutArticles'];
 
@@ -140,6 +142,7 @@ class IndexController extends AbstractController
             $currentPage = ceil($countArticles / $postOnPage);
         }
         $offset = ($currentPage - 1) * $postOnPage;
+
         if ($offset < 0) {
             $offset = 0;
         }

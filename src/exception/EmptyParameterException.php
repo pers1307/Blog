@@ -1,6 +1,6 @@
 <?php
 /**
- * NoPostArgumentException.php
+ * EmptyParameterException.php
  *
  * @author      Pereskokov Yurii
  * @copyright   2015 Pereskokov Yurii
@@ -10,7 +10,7 @@
 
 namespace pers1307\blog\exception;
 
-class NoPostArgumentException extends \Exception
+class EmptyParameterException extends \Exception
 {
     /**
      * @param string $message

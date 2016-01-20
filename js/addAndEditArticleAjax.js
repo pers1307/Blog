@@ -1,7 +1,6 @@
 /**
- *
- *  todo: Сделать добавление статьи через ajax.
- *
+ *  todo: Сделать добавление статьи через ajax. получаем данные обрабатываем их, если что то не так возвращаем ошибки,
+ *  если все ок, то выпиливаем все и ставим, что статья добавлена
  */
 
 $(document).ready(function(){
@@ -10,9 +9,10 @@ $(document).ready(function(){
         e.preventDefault();
 
         var vars = $(this).serialize();
-        //var furl = $(this).attr('action');
+        var furl = $(this).attr('action');
 
-
+        console.log(vars);
+        console.log(furl);
 
         $.ajax({
             type: "POST",
@@ -20,6 +20,37 @@ $(document).ready(function(){
             data: vars,
             success: function(response)
             {
+                response = JSON.parse(response);
+
+                if (response.NoPostArgumentException != undefined) {
+                    alert('Something went wrong...');
+                    return;
+                }
+
+                if (response.Exception != undefined) {
+                    alert('Something went wrong...');
+                    return;
+                }
+
+                if (response.EmptyParameterException != undefined) {
+
+                    if () {
+
+                    }
+
+
+
+
+
+                    console.log('!!');
+                    return;
+                }
+
+
+
+                return;
+
+                /*
                 if (response.status.code != 1001) {
                     if (response.data.succes === 'Ok') {
                         $("#formCall").empty();
@@ -63,11 +94,11 @@ $(document).ready(function(){
                     }
 
                 }
+                */
             }
         }); // $.ajax
 
     }); // $('#formCall').submit
-
 
 
     $('.delete').click(function(event) {
@@ -90,5 +121,5 @@ $(document).ready(function(){
                 }
             }
         });
-    });
+    }); // $('.delete').click
 });

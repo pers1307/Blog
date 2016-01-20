@@ -10,25 +10,191 @@
 
 namespace pers1307\blog\controllers;
 
+use pers1307\blog\exception\InvalidAutorizationException;
+use pers1307\blog\exception\NoPostArgumentException;
+use pers1307\blog\exception\EmptyParameterException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use pers1307\blog\repository\ArticleRepository;
-use pers1307\blog\service\Autorization;
 use pers1307\blog\repository\UserRepository;
+use pers1307\blog\service\Autorization;
+use pers1307\blog\service\Log;
 use KoKoKo\assert\Assert;
 
 class ArticleController extends AbstractController
 {
+    /** @return Response */
+    public function displayAction()
+    {
+        try {
+            if (!Autorization::getInstance()->checkAutorization()) {
+                throw new InvalidAutorizationException(
+                    'У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь.'
+                );
+            }
+
+            $params = [
+                'forContent' => 'article.html'
+            ];
+
+            $response = new Response(
+                'Content',
+                Response::HTTP_OK,
+                ['content-type' => 'text/html']
+            );
+            $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+
+            return $response;
+
+        } catch (InvalidAutorizationException $exception) {
+            $params = [
+                'forContent' => 'template/alert.html',
+                'message' => $exception->getMessage()
+            ];
+
+            Log::getInstance()->addError(
+                'Исключение в ArticleController->displayAction : ' . $exception->getMessage()
+            );
+
+            $response = new Response(
+                'Content',
+                Response::HTTP_OK,
+                ['content-type' => 'text/html']
+            );
+            $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+
+            return $response;
+        }
+    }
+
     /**
-     * todo: сюда переместить редактирование и добавление статьи
+     * @return Array
+     *
+     * @throws \InvalidArgumentException|\Exception
      */
+    public function addArticleAction()
+    {
+        $request = Request::createFromGlobals();
+
+        try {
+            if (!$request->request->has('name')) {
+                throw new NoPostArgumentException(
+                    'Аргумент "name" на задан в POST массиве'
+                );
+            }
+            $name = htmlspecialchars($request->request->get('name'));
+
+            if (empty($name)) {
+                throw new EmptyParameterException(
+                    'Статья должна иметь название'
+                );
+            }
+
+            if (!$request->request->has('text')) {
+                throw new NoPostArgumentException(
+                    'Аргумент "text" на задан в POST массиве'
+                );
+            }
+            $text = htmlspecialchars($request->request->get('text'));
+
+            if (empty($text)) {
+                throw new EmptyParameterException(
+                    'Статья должна иметь текст'
+                );
+            }
+
+            if (!$request->request->has('author')) {
+                throw new NoPostArgumentException(
+                    'Аргумент "author" на задан в POST массиве'
+                );
+            }
+            $author = htmlspecialchars($request->request->get('author'));
+
+            if (empty($author)) {
+                throw new EmptyParameterException(
+                    'Статья должна иметь автора'
+                );
+            }
+
+            $name = null;
+            $tmp = null;
+
+            foreach ($request->files as $uploadedFile) {
+                foreach ( $uploadedFile as $item) {
+                    $name = $item->getClientOriginalName();
+                    $item->move('img', $name);
+                }
+            }
+
+            if ($name === null) {
+                throw new EmptyParameterException(
+                    'Картинка не выбрана'
+                );
+            }
+
+            // Все хорошо, добавляем в базу!
+
+            $preArticle['pathImage'] = 'img/' . $name;
+
+            $article = new Article();
+            $article->fromArray($preArticle);
+
+            (new ArticleRepository())->insert($article);
+
+        } catch (NoPostArgumentException $exception) {
+
+            $response = new Response(
+                'Content',
+                Response::HTTP_OK,
+                ['content-type' => 'text/html']
+            );
+            $jsonStr = json_encode(['NoPostArgumentException' => $exception->getMessage()]);
+            $response->setContent($jsonStr);
+
+            Log::getInstance()->addError(
+                'Исключение в ArticleController->addArticleAction : ' . $exception->getMessage()
+            );
+
+            return $response;
+        } catch(EmptyParameterException $exception) {
+
+            $response = new Response(
+                'Content',
+                Response::HTTP_OK,
+                ['content-type' => 'text/html']
+            );
+            $jsonStr = json_encode(['EmptyParameterException' => $exception->getMessage()]);
+            $response->setContent($jsonStr);
+
+            Log::getInstance()->addError(
+                'Исключение в ArticleController->addArticleAction : ' . $exception->getMessage()
+            );
+
+            return $response;
+        } catch (\Exception $exception) {
+
+            $response = new Response(
+                'Content',
+                Response::HTTP_OK,
+                ['content-type' => 'text/html']
+            );
+            $jsonStr = json_encode(['Exception' => $exception->getMessage()]);
+            $response->setContent($jsonStr);
+
+            Log::getInstance()->addError(
+                'Исключение в ArticleController->addArticleAction : ' . $exception->getMessage()
+            );
+
+            return $response;
+        }
+    }
 
     /**
      * @param int $id
      */
     public function findAction($id)
     {
-        // проверка на int обязательна
+        Assert::assert($id, 'id')->notEmpty()->positive()->int();
 
         /**
          * todo: Этот action отображает существующие статьи и выводит заполненную форму, если такая сттья существует
@@ -53,72 +219,6 @@ class ArticleController extends AbstractController
 
         }
     }
-
-    /**
-     * Я этот метод переделал, но мне не понятно, как сделать прослойку между исключениями для программиста и исключениями для пользователя?
-     * Можно, конечно, написать что-то в стиле "Что-то пошло не так", но это может быть по вине пользователя, ибо поля не должны быть пустыми.
-     * Мне только приходит в голову, сделать конфиг, с сопоставлением исключений системных с пользовательскими.
-     *
-     * @return Array
-     *
-     * @throws \InvalidArgumentException|\Exception
-     */
-    protected function addArticle()
-    {
-        /**
-         * todo: этот метод будет принимать от ajax статью и добавлять, либо обновлять её в базе
-         */
-
-        $request = Request::createFromGlobals();
-
-        $preArticle = [];
-
-        try {
-            if (!$request->request->has('newArticleName')) {
-                throw new \InvalidArgumentException('Аргумент "newArticleName" на задан в POST массиве');
-            }
-            $preArticle['name'] = htmlspecialchars($request->request->get('newArticleName'));
-
-            if (!$request->request->has('newArticleText')) {
-                throw new \InvalidArgumentException('Аргумент "newArticleText" на задан в POST массиве');
-            }
-            $preArticle['text'] = htmlspecialchars($request->request->get('newArticleText'));
-
-            if (!$request->request->has('newArticleAuthor')) {
-                throw new \InvalidArgumentException('Аргумент "newArticleAuthor" на задан в POST массиве');
-            }
-            $preArticle['author'] = htmlspecialchars($request->request->get('newArticleAuthor'));
-
-            $name = null;
-            $tmp = null;
-
-            foreach ($request->files as $uploadedFile) {
-                foreach ( $uploadedFile as $item) {
-                    $name = $item->getClientOriginalName();
-                    $item->move('img', $name);
-                }
-            }
-
-            if ($name === null) {
-                throw new \Exception(
-                    'Картинка не выбрана!'
-                );
-            }
-            $preArticle['pathImage'] = 'img/' . $name;
-
-            $article = new Article();
-            $article->fromArray($preArticle);
-
-            (new ArticleRepository())->insert($article);
-
-        } catch (\Exception $exception) {
-            return [
-                'TextError' => $exception->getMessage(),
-                'article' => $preArticle
-            ];
-        }
-    }
-
 
     /**
      * @return array

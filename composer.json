@@ -11,7 +11,6 @@
     "require": {
         "ko-ko-ko/assert": "0.2.x",
         "phroute/phroute": "2.0.0",
-        "firephp/firephp-core": "0.4.*",
         "twig/twig": "~1.23",
         "symfony/http-foundation": "~2.7",
         "monolog/monolog": "^1.17"
