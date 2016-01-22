@@ -37,6 +37,8 @@ class ArticleRepository
     }
 
     /**
+     * todo: нужно переработать этот метод подновую БД
+     *
      * @param article $article
      *
      * @throws \InvalidArgumentException
@@ -46,7 +48,7 @@ class ArticleRepository
         Assert::assert($article->getName(), 'article->getName()')->notEmpty()->string();
         Assert::assert($article->getText(), 'article->getText()')->notEmpty()->string();
         Assert::assert($article->getAuthor(), 'article->getAuthor()')->notEmpty()->string();
-        Assert::assert($article->getPathImage(), 'article->getPathImage()')->notEmpty()->string();
+        //Assert::assert($article->getPathImage(), 'article->getPathImage()')->notEmpty()->string();
 
         $connection = (new MySqlConnection())->getConnection();
 
@@ -79,7 +81,7 @@ class ArticleRepository
             $authorId = $author['id'];
         }
 
-        $pathId = (new Files())->add($article->getPathImage());
+        //$pathId = (new Files())->add($article->getPathImage());
 
         $stmt = $connection->prepare(
             'INSERT INTO articles(`name`, authorId, content, logoId)
@@ -90,7 +92,8 @@ class ArticleRepository
             'articleName' => $article->getName(),
             'authotId' => $authorId,
             'content' => $article->getText(),
-            'logoId' => $pathId
+            //'logoId' => $pathId
+            'logoId' => 1
         ]);
     }
 

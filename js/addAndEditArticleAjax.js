@@ -1,6 +1,5 @@
 /**
- *  todo: Сделать добавление статьи через ajax. получаем данные обрабатываем их, если что то не так возвращаем ошибки,
- *  если все ок, то выпиливаем все и ставим, что статья добавлена
+ *  todo: сделать добавление картинки через ajax
  */
 
 $(document).ready(function(){
@@ -10,9 +9,6 @@ $(document).ready(function(){
 
         var vars = $(this).serialize();
         var furl = $(this).attr('action');
-
-        console.log(vars);
-        console.log(furl);
 
         $.ajax({
             type: "POST",
@@ -33,93 +29,49 @@ $(document).ready(function(){
                 }
 
                 if (response.EmptyParameterException != undefined) {
+                    $('.js-alert').empty();
 
-                    if () {
-
+                    if (response.EmptyParameterException == 'Статья должна иметь название') {
+                        $('.js-name').addClass('has-error');
                     }
 
+                    if (response.EmptyParameterException == 'Статья должна иметь автора') {
+                        $('.js-author').addClass('has-error');
+                    }
 
+                    if (response.EmptyParameterException == 'Статья должна иметь текст') {
+                        $('.js-text').addClass('has-error');
+                    }
 
+                    if (response.EmptyParameterException == 'Картинка не выбрана') {
+                        $('.js-image').css('outline', '1px solid #A90006');
+                    }
 
+                    $('.js-alert').append(error(response.EmptyParameterException));
 
-                    console.log('!!');
                     return;
                 }
 
+                if (response.success == 'success') {
+                    // удалить все содержимое input'ов
+                    $("input[name='name']").val('');
+                    $("textarea[name='text']").val('');
 
-
-                return;
-
-                /*
-                if (response.status.code != 1001) {
-                    if (response.data.succes === 'Ok') {
-                        $("#formCall").empty();
-                        $("#formCall").append("<span class='succes'>Спасибо за обращение. Мы свяжемся с вами в ближайшее время.</span>");
-                    }
-                } else {
-
-                    if (response.data.honeyPot != undefined) {
-                        return;
-                    }
-
-                    // снять везде класс ошибки
-                    $("#formCall input[name='name']").removeClass('inputError');
-                    $("#formCall input[name='phone']").removeClass('inputError');
-                    $("#formCall textarea[name='comment']").removeClass('inputError');
-                    $("#formCall span[class='error']").remove();
-
-                    if (response.data.error.name != undefined) {
-                        if (response.data.error.name === 'name!') {
-                            $("#formCall input[name='name']").addClass( "inputError" );
-                            $("#formCall input[name='name']").after("<span class='error'>Поле не заполнено</span>");
-                        }
-                    }
-
-                    if (response.data.error.phone != undefined) {
-                        if (response.data.error.phone === 'phone!') {
-                            $("#formCall input[name='phone']").addClass( "inputError" );
-                            $("#formCall input[name='phone']").after("<span class='error'>Поле не заполнено</span>");
-                        }
-                        if (response.data.error.phone === 'phone!!') {
-                            $("#formCall input[name='phone']").addClass( "inputError" );
-                            $("#formCall input[name='phone']").after("<span class='error'>Поле должно содержать только цифры</span>");
-                        }
-                    }
-
-                    if (response.data.error.comment != undefined) {
-                        if (response.data.error.comment === 'comment!') {
-                            $("#formCall textarea[name='comment']").addClass( "inputError" );
-                            $("#formCall textarea[name='comment']").after("<span class='error'>Поле не заполнено</span>");
-                        }
-                    }
-
+                    /**
+                     * todo: стилизовать эту надпись.
+                     */
+                    $('.js-alert').append('Статья успешно добавлена!');
                 }
-                */
             }
         }); // $.ajax
 
     }); // $('#formCall').submit
 
+    function error(content)
+    {
+        return '<div class="form-group alert-danger col-md-12">' +
+            '<h4>' + content + '</h4>' +
+            '</div>';
+    }
 
-    $('.delete').click(function(event) {
-        event.preventDefault();
-
-        var del = $(this).attr("data-delete");
-        var route = '/deleteArticle/' + del;
-
-        $.ajax({
-            type: "POST",
-            url: route,
-            data: ({}),
-            success: function(data)
-            {
-                if (data == 'ArticleDelete') {
-                    var str = '#idPost' + del;
-                    $(str).fadeOut(500);
-                } else {
-                    alert('Произошла ошибка при удалении статьи!');
-                }
-            }
-        });
-    }); // $('.delete').click
 });

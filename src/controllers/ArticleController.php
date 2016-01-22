@@ -16,8 +16,8 @@ use pers1307\blog\exception\EmptyParameterException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use pers1307\blog\repository\ArticleRepository;
-use pers1307\blog\repository\UserRepository;
 use pers1307\blog\service\Autorization;
+use pers1307\blog\entity\Article;
 use pers1307\blog\service\Log;
 use KoKoKo\assert\Assert;
 
@@ -90,19 +90,6 @@ class ArticleController extends AbstractController
                 );
             }
 
-            if (!$request->request->has('text')) {
-                throw new NoPostArgumentException(
-                    'Аргумент "text" на задан в POST массиве'
-                );
-            }
-            $text = htmlspecialchars($request->request->get('text'));
-
-            if (empty($text)) {
-                throw new EmptyParameterException(
-                    'Статья должна иметь текст'
-                );
-            }
-
             if (!$request->request->has('author')) {
                 throw new NoPostArgumentException(
                     'Аргумент "author" на задан в POST массиве'
@@ -116,9 +103,26 @@ class ArticleController extends AbstractController
                 );
             }
 
+            if (!$request->request->has('text')) {
+                throw new NoPostArgumentException(
+                    'Аргумент "text" на задан в POST массиве'
+                );
+            }
+            $text = htmlspecialchars($request->request->get('text'));
+
+            if (empty($text)) {
+                throw new EmptyParameterException(
+                    'Статья должна иметь текст'
+                );
+            }
+
             $name = null;
             $tmp = null;
 
+            /**
+             * todo: сделать передачу картинки на ajax
+             */
+            /*
             foreach ($request->files as $uploadedFile) {
                 foreach ( $uploadedFile as $item) {
                     $name = $item->getClientOriginalName();
@@ -131,15 +135,27 @@ class ArticleController extends AbstractController
                     'Картинка не выбрана'
                 );
             }
+            */
 
-            // Все хорошо, добавляем в базу!
-
-            $preArticle['pathImage'] = 'img/' . $name;
-
+            /**
+             * todo: сделать insert данных в базу
+             */
             $article = new Article();
-            $article->fromArray($preArticle);
-
+            $article->setName($name)
+                ->setAuthor($author)
+                ->setText($text)
+                ->setPathImage('');
             (new ArticleRepository())->insert($article);
+
+            $response = new Response(
+                'Content',
+                Response::HTTP_OK,
+                ['content-type' => 'text/html']
+            );
+            $jsonStr = json_encode(['success' => 'success']);
+            $response->setContent($jsonStr);
+
+            return $response;
 
         } catch (NoPostArgumentException $exception) {
 
@@ -156,7 +172,7 @@ class ArticleController extends AbstractController
             );
 
             return $response;
-        } catch(EmptyParameterException $exception) {
+        } catch (EmptyParameterException $exception) {
 
             $response = new Response(
                 'Content',
@@ -189,36 +205,65 @@ class ArticleController extends AbstractController
         }
     }
 
-    /**
-     * @param int $id
-     */
     public function findAction($id)
     {
-        Assert::assert($id, 'id')->notEmpty()->positive()->int();
+        $id = Assert::assert($id, 'id')->digit($id)->toInt()->get();
 
         /**
          * todo: Этот action отображает существующие статьи и выводит заполненную форму, если такая сттья существует
          */
 
         try {
+            if (!Autorization::getInstance()->checkAutorization()) {
+                throw new InvalidAutorizationException(
+                    'У вас нет доступа к этой странице. Пожалуйста, авторизируйтесь.'
+                );
+            }
+
+            $article = new ArticleRepository();
+
+            // Извлечь статью из базы и вывести её на сайт
+            /*
+            $articles = $article->findAll();
+            */
+            $params = [
+                //'articles' => $articles,
+                'forContent' => 'article.html'
+            ];
+
 
             $response = new Response(
                 'Content',
                 Response::HTTP_OK,
                 ['content-type' => 'text/html']
             );
-            $params = [
-                //'article' => $article,
-                //'errorAddArticle' => $errorAddArticle,
-            ];
-            $params['forContent'] = 'article.html';
-
             $response->setContent($this->renderByTwig('layoutFilled.html', $params));
-            $response->send();
-        } catch (\Exception $exception) {
 
+            return $response;
+        } catch (InvalidAutorizationException $exception) {
+            $params = [
+                'forContent' => 'template/alert.html',
+                'message' => $exception->getMessage()
+            ];
+
+            Log::getInstance()->addError(
+                'Исключение в ArticleController->findAction($id) : ' . $exception->getMessage()
+            );
+
+            $response = new Response(
+                'Content',
+                Response::HTTP_OK,
+                ['content-type' => 'text/html']
+            );
+            $response->setContent($this->renderByTwig('layoutFilled.html', $params));
+
+            return $response;
         }
     }
+
+    /**
+     * Дальше можно не смотреть, код находится на рефакторинге, но скорее всего он будет удален
+     */
 
     /**
      * @return array
@@ -293,7 +338,6 @@ class ArticleController extends AbstractController
      */
     protected function editArticle(Article $article)
     {
-        // Здесь та же проблема!
         if (isset($_POST['NewArticleName']) && isset($_POST['NewArticleText']) && isset($_POST['NewArticleAuthor'])) {
 
             if ($_POST['NewArticleName'] === '') {
@@ -339,25 +383,5 @@ class ArticleController extends AbstractController
 
             return $this->setErrors('0', '');
         }
-    }
-
-    /**
-     * todo: Удалить этот метод после перехода на Исключения
-     * @param string code
-     * @param string $text
-     * @param ArticleRepository $article|null
-     *
-     * @return Array
-     * @throws \InvalidArgumentException
-     */
-    protected function setErrors($code, $text, $article = null)
-    {
-        Assert::assert($code, 'code')->string();
-        Assert::assert($text, 'text')->string();
-        $errors['TextError'] = $text;
-        $errors['CodeError'] = $code;
-        $errors['Article'] = $article;
-
-        return $errors;
     }
 }
