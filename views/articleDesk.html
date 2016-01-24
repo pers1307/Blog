@@ -1,0 +1,43 @@
+<div id="HeaderControlPanel" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <i class="fa fa-wrench"></i>Панель управления контентом блога
+        </div>
+    </div>
+</div>
+
+<div id="ContentControlPanel" class="container">
+    <div class="row">
+        <div id='WrapAccordion'>
+            <h3>Редактирование статей</h3>
+            <div class="panel-group" id="accordion">
+                {% for article in articles %}
+                    <div class="panel panel-default" id="idPost{{ article.getId() }}">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#{{ article.getId() }}" class="PostName">
+                                    Дата {{ article.getCreatedAt() }} Название статьи: {{ article.getName() }}
+                                </a>
+                                <a href='?Delete={{ article.getId() }}' class='btn btn-danger btn-xs delete' data-delete='{{ article.getId() }}'><i class="fa fa-times fa-2x"></i></a>
+                                <a href='/article/{{ article.getId() }}' class='btn btn-info btn-xs'><i class="fa fa-pencil-square-o fa-2x"></i></a>
+                            </h4>
+                        </div>
+                        <div id="{{ article.getId() }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="Image"><img src="{{ article.getPathImage() }}" width="100%"> </div>
+                                <p>Автор: {{ article.getAuthor() }}</p>
+                                {{ article.getText() }}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <h1>В данный момент в блоге нет статей!</h1>
+                {% endfor %}
+                <br />
+                <a href='/article' class='btn btn-primary btn-xs addArticle'><i class="fa fa-plus fa-2x"></i> Добавить статью</a>
+                <br />
+            </div>
+        </div>
+    </div>
+</div>
+</div>

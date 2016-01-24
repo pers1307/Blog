@@ -1,0 +1,68 @@
+<div id="Header" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            Блог PHP - разработчика
+        </div>
+    </div>
+</div>
+
+<div id="Content" class="container">
+    <div class="row">
+        <div class="col-md-9">
+            {% for article in articles %}
+                <div class="Block-post">
+                    <h2 class="blog-post-title">{{ article.getName() }}</h2>
+                    <p class="blog-post-meta">
+                        {{ article.getCreatedAt() }} by <span class="blog-post-autor">{{ article.getAuthor() }}</span>
+                    </p>
+                    <hr>
+                    <div class="Image"><img src="{{ article.getPathImage() }}" width="100%"> </div>
+                    <div class="blog-post-text">
+                        {{ article.getText() }}
+                    </div>
+                </div>
+            {% else %}
+                <h1>В данный момент в блоге нет статей!</h1>
+            {% endfor %}
+
+            {% if page != 0 %}
+                <ul class="pagination pagination-lg">
+
+                    {% if page != 1 %}
+                    <li><a href='?page={{ page - 1 }}'>&laquo; Назад</a></li>
+                    {% endif %}
+
+                    {% for count in 1..countPage %}
+                    {% if page == count %}
+                    <li class='active'><a href='?page={{ count  }}'>{{ count }}</a></li>
+                    {% else %}
+                    <li><a href='?page={{ count  }}'>{{ count  }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page != countPage %}
+                    <li><a href='?page={{ page + 1 }}'>Вперед &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="col-md-2 col-md-offset-1">
+            <p id="MyPhoto"><img src="img/photo.jpg" width="100" height="150" alt="Хозяин блога"></p>
+            {% if error != '' %}
+                <div class="alert-danger">
+                    <p>{{error}}</p>
+                </div>
+            {% endif %}
+
+            {% if login == '' %}
+                {%include 'template/autorizationForm.html' %}
+            {% else %}
+                <p>Логин : {{ login }}</p>
+                <p><a href="/articlesDesk" class="btn btn-primary">Войти</a></p>
+                <p><a href="?exit=true" class="btn btn-primary">Выйти</a></p>
+            {% endif %}
+
+        </div>
+    </div>
+</div>

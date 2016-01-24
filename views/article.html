@@ -1,0 +1,45 @@
+<div id="HeaderControlPanel" class="container">
+    <div class="row">
+        <div class="col-md-12">
+        </div>
+    </div>
+</div>
+
+<div id="ContentControlPanel" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="New-post">
+                <h3>Работа со статьей</h3>
+
+                <div class="js-alert">
+
+                </div>
+
+                <form role="form" method="post" action="/addArticle" enctype="multipart/form-data" class="js-form">
+                    <div class="form-group col-md-8 js-name">
+                        <label>Название статьи</label>
+                        <input type="text" class="form-control" placeholder="Название статьи" name="name">
+                    </div>
+                    <div class="form-group col-md-4 js-author">
+                        <label>Автор статьи</label>
+                        <input type="text" class="form-control" placeholder="Автор статьи" name="author" value="Перескоков Юрий">
+                    </div>
+
+                    <!--<div class="form-group col-md-12 js-image">-->
+                        <!--<label>Хочу добавить картинку!</label>-->
+                        <!--<input type="file" name="newArticleImage[]" multiple="multiple">-->
+                    <!--</div>-->
+
+                    <div class="form-group col-md-12 js-text">
+                        <label>Текст статьи: </label>
+                        <textarea id="newArticle" class="form-control" rows="6" name="text" style="resize: none"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <button id="ForSub" type="submit" class="btn btn-primary" name="sub"><i class="fa fa-check"></i>Отправить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
